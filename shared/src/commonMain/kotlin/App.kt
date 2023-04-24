@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -19,7 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.lazy.items
+import kotlinx.datetime.LocalDateTime
+import kotlin.math.abs
 
 @Composable
 fun App() {
@@ -29,12 +31,20 @@ fun App() {
                 Name(modifier = Modifier.weight(1f), name = "Oksana")
                 Name(modifier = Modifier.weight(1f), name = "Alex")
             }
+
+            // mock data
+            val cibcOksanaTxs = getMockCIBCOksanaTxs()
+            val servusOksanaTxs = emptyList<Transaction>()
+            val cibcAlexTxs = emptyList<Transaction>()
+            val servusAlexTxs = emptyList<Transaction>()
+
             Row {
                 Column(modifier = Modifier.weight(1f)) {
                     Account(
                         modifier = Modifier.weight(1f)
                             .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
-                        bankName = "CIBC"
+                        bankName = "CIBC",
+                        transactions = cibcOksanaTxs
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     Account(
@@ -42,7 +52,8 @@ fun App() {
                             color = Color.LightGray,
                             shape = RoundedCornerShape(5.dp)
                         ),
-                        bankName = "Servus"
+                        bankName = "Servus",
+                        transactions = servusOksanaTxs
                     )
                 }
                 Spacer(modifier = Modifier.width(20.dp))
@@ -52,17 +63,18 @@ fun App() {
                             color = Color.LightGray,
                             shape = RoundedCornerShape(5.dp)
                         ),
-                        bankName = "CIBC"
+                        bankName = "CIBC",
+                        transactions = cibcAlexTxs
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     Account(
                         modifier = Modifier.weight(1f)
                             .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
-                        bankName = "Servus"
+                        bankName = "Servus",
+                        transactions = servusAlexTxs
                     )
                 }
             }
-
         }
     }
 }
@@ -87,16 +99,40 @@ private fun Account(modifier: Modifier, bankName: String, transactions: List<Tra
             text = bankName
         )
         Status(transactions)
-        Transactions(transactions)
-        Spacer(modifier = Modifier.weight(1f))
+        Transactions(modifier = Modifier.weight(1f), transactions = transactions)
         AddBtn(modifier = Modifier.align(Alignment.CenterHorizontally))
     }
 
 @Composable
-private fun Transactions(transactions: List<Transaction>) {
-    LazyColumn {
-        items(transactions) {
+private fun Transactions(modifier: Modifier, transactions: List<Transaction>) {
+    LazyColumn(modifier = modifier) {
+        items(transactions) { tx ->
+            TransactionItem(tx)
+        }
+    }
+}
 
+@Composable
+private fun TransactionItem(tx: Transaction) {
+    Column(modifier = Modifier.padding(4.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                modifier = Modifier.padding(end = 8.dp),
+                fontSize = 12.sp,
+                text = tx.dateTime.print()
+            )
+            Text(
+                modifier = Modifier.padding(end = 5.dp),
+                color = if (tx.amount < 0) Color.Red else Color.Green,
+                text = if (tx.amount < 0) "-$${abs(tx.amount)}" else "$${tx.amount}"
+            )
+        }
+        if (tx.comment.isNotEmpty()) {
+            Text(
+                modifier = Modifier.padding(top = 2.dp),
+                fontSize = 12.sp,
+                text = tx.comment
+            )
         }
     }
 }
@@ -119,5 +155,10 @@ private fun AddBtn(modifier: Modifier) = Button(
     content = {
         Text("Add transaction")
     })
+
+private fun LocalDateTime.print() =
+    "$year-${monthNumber.applyZero()}-${dayOfMonth.applyZero()}\n${hour.applyZero()}:${minute.applyZero()}"
+
+private fun Int.applyZero() = if (this < 10) "0$this" else "$this"
 
 expect fun getPlatformName(): String

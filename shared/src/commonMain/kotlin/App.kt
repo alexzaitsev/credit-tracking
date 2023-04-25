@@ -1,10 +1,12 @@
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,55 +25,68 @@ import androidx.compose.ui.unit.sp
 import kotlinx.datetime.LocalDateTime
 import kotlin.math.abs
 
+private val CIBC_CREDIT_LIMIT = 1000
+private val SERVUS_CREDIT_LIMIT = 1500
+
 @Composable
 fun App() {
     MaterialTheme {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-                Name(modifier = Modifier.weight(1f), name = "Oksana")
-                Name(modifier = Modifier.weight(1f), name = "Alex")
+            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                UserName(modifier = Modifier.weight(1f), name = "Oksana")
+                UserName(modifier = Modifier.weight(1f), name = "Alex")
             }
-
-            // mock data
-            val cibcOksanaTxs = getMockCIBCOksanaTxs()
-            val servusOksanaTxs = emptyList<Transaction>()
-            val cibcAlexTxs = emptyList<Transaction>()
-            val servusAlexTxs = emptyList<Transaction>()
 
             Row {
                 Column(modifier = Modifier.weight(1f)) {
-                    Account(
+                    AccountInfo(
                         modifier = Modifier.weight(1f)
                             .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
-                        bankName = "CIBC",
-                        transactions = cibcOksanaTxs
+                        accountInfo = AccountInfo(
+                            bankName = "CIBC",
+                            balance = 200.0f,
+                            status = "No issues found",
+                            lastTxs = getMockCIBCOksanaTxs()
+                        )
                     )
                     Spacer(modifier = Modifier.height(20.dp))
-                    Account(
+                    AccountInfo(
                         modifier = Modifier.weight(1f).background(
                             color = Color.LightGray,
                             shape = RoundedCornerShape(5.dp)
                         ),
-                        bankName = "Servus",
-                        transactions = servusOksanaTxs
+                        accountInfo = AccountInfo(
+                            bankName = "Servus",
+                            balance = -100.0f,
+                            status = "No issues found",
+                            lastTxs = emptyList<Transaction>()
+                        )
                     )
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Account(
+                    AccountInfo(
                         modifier = Modifier.weight(1f).background(
                             color = Color.LightGray,
                             shape = RoundedCornerShape(5.dp)
                         ),
-                        bankName = "CIBC",
-                        transactions = cibcAlexTxs
+                        accountInfo = AccountInfo(
+                            bankName = "CIBC",
+                            balance = -57.0f,
+                            status = "No issues found",
+                            lastTxs = emptyList<Transaction>()
+                        )
                     )
                     Spacer(modifier = Modifier.height(20.dp))
-                    Account(
+                    AccountInfo(
                         modifier = Modifier.weight(1f)
                             .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
-                        bankName = "Servus",
-                        transactions = servusAlexTxs
+                        accountInfo = AccountInfo(
+                            bankName = "Servus",
+                            balance = 63.0f,
+                            status = "No issues found",
+                            lastTxs = emptyList<Transaction>()
+                        )
                     )
                 }
             }
@@ -80,7 +95,7 @@ fun App() {
 }
 
 @Composable
-private fun Name(modifier: Modifier, name: String) = Text(
+private fun UserName(modifier: Modifier, name: String) = Text(
     modifier = modifier,
     textAlign = TextAlign.Center,
     fontWeight = FontWeight.Bold,
@@ -89,31 +104,57 @@ private fun Name(modifier: Modifier, name: String) = Text(
 )
 
 @Composable
-private fun Account(modifier: Modifier, bankName: String, transactions: List<Transaction>) =
-    Column(modifier = modifier) {
+private fun AccountInfo(
+    modifier: Modifier,
+    accountInfo: AccountInfo
+) = Column(modifier = modifier) {
+    BankNameAndBalance(bankName = accountInfo.bankName, balance = accountInfo.balance)
+    Status(accountStatus = accountInfo.status)
+    Transactions(modifier = Modifier.weight(1f), txs = accountInfo.lastTxs)
+    AddBtn(modifier = Modifier.align(Alignment.CenterHorizontally))
+}
+
+@Composable
+private fun BankNameAndBalance(bankName: String, balance: Float) =
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
         Text(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-            textAlign = TextAlign.Center,
             fontWeight = FontWeight.SemiBold,
             fontSize = 20.sp,
             text = bankName
         )
-        Status(transactions)
-        Transactions(modifier = Modifier.weight(1f), transactions = transactions)
-        AddBtn(modifier = Modifier.align(Alignment.CenterHorizontally))
+        Spacer(modifier = Modifier.size(4.dp))
+        Text(
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 20.sp,
+            color = if (balance < 0) Color.Red else Color.Green,
+            text = "$balance"
+        )
     }
 
 @Composable
-private fun Transactions(modifier: Modifier, transactions: List<Transaction>) {
+private fun Status(accountStatus: String) = Text(
+    modifier = Modifier.fillMaxWidth()
+        .background(color = Color.Green, shape = RoundedCornerShape(5.dp))
+        .padding(8.dp),
+    textAlign = TextAlign.Center,
+    text = accountStatus
+)
+
+@Composable
+private fun Transactions(modifier: Modifier, txs: List<Transaction>) {
     LazyColumn(modifier = modifier) {
-        items(transactions) { tx ->
-            TransactionItem(tx)
+        items(txs) { tx ->
+            TxItem(tx)
         }
     }
 }
 
 @Composable
-private fun TransactionItem(tx: Transaction) {
+private fun TxItem(tx: Transaction) {
     Column(modifier = Modifier.padding(4.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -131,19 +172,11 @@ private fun TransactionItem(tx: Transaction) {
             Text(
                 modifier = Modifier.padding(top = 2.dp),
                 fontSize = 12.sp,
+                color = Color(0xff3d3d3d),
                 text = tx.comment
             )
         }
     }
-}
-
-@Composable
-private fun Status(transactions: List<Transaction>) = Column(
-    modifier = Modifier.fillMaxWidth()
-        .background(color = Color.Green, shape = RoundedCornerShape(5.dp))
-        .padding(8.dp)
-) {
-    Text("No issues found")
 }
 
 @Composable

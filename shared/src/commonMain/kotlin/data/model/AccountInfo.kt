@@ -1,3 +1,5 @@
+package data.model
+
 data class AccountInfo(
     val bankName: String,
     val balance: Float,

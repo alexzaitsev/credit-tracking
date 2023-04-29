@@ -1,3 +1,5 @@
+package data.model
+
 import kotlinx.datetime.LocalDateTime
 
 data class Transaction(

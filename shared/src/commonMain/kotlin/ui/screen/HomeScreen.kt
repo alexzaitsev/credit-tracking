@@ -1,6 +1,7 @@
 package ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,7 +31,10 @@ import kotlinx.datetime.LocalDateTime
 import kotlin.math.abs
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onAddTxClicked: () -> Unit,
+    onTxDetailsClicked: (Int) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
             UserName(modifier = Modifier.weight(1f), name = "Oksana")
@@ -47,7 +51,9 @@ fun HomeScreen() {
                         balance = 200.0f,
                         status = "No issues found",
                         lastTxs = getMockCIBCOksanaTxs()
-                    )
+                    ),
+                    onAddTxClicked = onAddTxClicked,
+                    onTxDetailsClicked = onTxDetailsClicked
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 AccountInfo(
@@ -60,7 +66,9 @@ fun HomeScreen() {
                         balance = -100.0f,
                         status = "No issues found",
                         lastTxs = emptyList<Transaction>()
-                    )
+                    ),
+                    onAddTxClicked = onAddTxClicked,
+                    onTxDetailsClicked = onTxDetailsClicked
                 )
             }
             Spacer(modifier = Modifier.width(20.dp))
@@ -75,7 +83,9 @@ fun HomeScreen() {
                         balance = -57.0f,
                         status = "No issues found",
                         lastTxs = emptyList<Transaction>()
-                    )
+                    ),
+                    onAddTxClicked = onAddTxClicked,
+                    onTxDetailsClicked = onTxDetailsClicked
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 AccountInfo(
@@ -86,7 +96,9 @@ fun HomeScreen() {
                         balance = 63.0f,
                         status = "No issues found",
                         lastTxs = emptyList<Transaction>()
-                    )
+                    ),
+                    onAddTxClicked = onAddTxClicked,
+                    onTxDetailsClicked = onTxDetailsClicked
                 )
             }
         }
@@ -106,12 +118,18 @@ private fun UserName(modifier: Modifier, name: String) = Text(
 @Composable
 private fun AccountInfo(
     modifier: Modifier,
-    accountInfo: AccountInfo
+    accountInfo: AccountInfo,
+    onAddTxClicked: () -> Unit,
+    onTxDetailsClicked: (Int) -> Unit
 ) = Column(modifier = modifier) {
     BankNameAndBalance(bankName = accountInfo.bankName, balance = accountInfo.balance)
     Status(accountStatus = accountInfo.status)
-    Transactions(modifier = Modifier.weight(1f), txs = accountInfo.lastTxs)
-    AddBtn(modifier = Modifier.align(Alignment.CenterHorizontally))
+    Transactions(
+        modifier = Modifier.weight(1f),
+        txs = accountInfo.lastTxs,
+        onItemClicked = onTxDetailsClicked
+    )
+    AddBtn(modifier = Modifier.align(Alignment.CenterHorizontally), onClick = onAddTxClicked)
 }
 
 @Composable
@@ -145,17 +163,17 @@ private fun Status(accountStatus: String) = Text(
 )
 
 @Composable
-private fun Transactions(modifier: Modifier, txs: List<Transaction>) {
+private fun Transactions(modifier: Modifier, txs: List<Transaction>, onItemClicked: (Int) -> Unit) {
     LazyColumn(modifier = modifier) {
         items(txs) { tx ->
-            TxItem(tx)
+            TxItem(tx = tx, onItemClicked = onItemClicked)
         }
     }
 }
 
 @Composable
-private fun TxItem(tx: Transaction) {
-    Column(modifier = Modifier.padding(4.dp)) {
+private fun TxItem(tx: Transaction, onItemClicked: (Int) -> Unit) {
+    Column(modifier = Modifier.padding(4.dp).clickable { onItemClicked(tx.id) }) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 modifier = Modifier.padding(end = 8.dp),
@@ -180,11 +198,9 @@ private fun TxItem(tx: Transaction) {
 }
 
 @Composable
-private fun AddBtn(modifier: Modifier) = Button(
+private fun AddBtn(modifier: Modifier, onClick: () -> Unit) = Button(
     modifier = modifier,
-    onClick = {
-        // TODO navigate
-    },
+    onClick = onClick,
     content = {
         Text("Add transaction")
     })

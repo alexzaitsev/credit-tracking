@@ -26,9 +26,10 @@ import androidx.compose.ui.unit.sp
 import data.getMockCIBCOksanaTxs
 import data.model.AccountInfo
 import data.model.Tx
-import kotlinx.datetime.LocalDateTime
+import ui.util.print
+import ui.util.printAmount
+import ui.util.zeroBasedColor
 import ui.view.default.DefaultButton
-import kotlin.math.abs
 
 @Composable
 fun HomeScreen(
@@ -152,7 +153,7 @@ private fun BankNameAndBalance(bankName: String, balance: Float) =
         Text(
             fontWeight = FontWeight.SemiBold,
             fontSize = 20.sp,
-            color = if (balance < 0) Color.Red else Color.Green,
+            color = balance.zeroBasedColor,
             text = "$balance"
         )
     }
@@ -182,12 +183,12 @@ private fun TxItem(tx: Tx, onItemClicked: (Int) -> Unit) {
             Text(
                 modifier = Modifier.padding(end = 8.dp),
                 fontSize = 12.sp,
-                text = tx.dateTime.print()
+                text = tx.dateTime.print(twoLines = true)
             )
             Text(
                 modifier = Modifier.padding(end = 5.dp),
-                color = if (tx.amount < 0) Color.Red else Color.Green,
-                text = if (tx.amount < 0) "-$${abs(tx.amount)}" else "$${tx.amount}"
+                color = tx.amount.zeroBasedColor,
+                text = tx.amount.printAmount()
             )
         }
         if (tx.comment.isNotEmpty()) {
@@ -200,8 +201,3 @@ private fun TxItem(tx: Tx, onItemClicked: (Int) -> Unit) {
         }
     }
 }
-
-private fun LocalDateTime.print() =
-    "$year-${monthNumber.applyZero()}-${dayOfMonth.applyZero()}\n${hour.applyZero()}:${minute.applyZero()}"
-
-private fun Int.applyZero() = if (this < 10) "0$this" else "$this"

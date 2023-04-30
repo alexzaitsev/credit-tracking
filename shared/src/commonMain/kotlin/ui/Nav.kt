@@ -25,7 +25,9 @@ internal object AddTxDest : Screen {
 
     @Composable
     override fun Content() {
-        AddTxScreen()
+        val navigator = LocalNavigator.currentOrThrow
+
+        AddTxScreen(onBackPressed = { navigator.pop() })
     }
 }
 

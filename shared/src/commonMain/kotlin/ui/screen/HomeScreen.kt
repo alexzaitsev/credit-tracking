@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import data.getMockCIBCOksanaTxs
 import data.model.AccountInfo
-import data.model.Transaction
+import data.model.Tx
 import kotlinx.datetime.LocalDateTime
 import kotlin.math.abs
 
@@ -65,7 +65,7 @@ fun HomeScreen(
                         bankName = "Servus",
                         balance = -100.0f,
                         status = "No issues found",
-                        lastTxs = emptyList<Transaction>()
+                        lastTxs = emptyList<Tx>()
                     ),
                     onAddTxClicked = onAddTxClicked,
                     onTxDetailsClicked = onTxDetailsClicked
@@ -82,7 +82,7 @@ fun HomeScreen(
                         bankName = "CIBC",
                         balance = -57.0f,
                         status = "No issues found",
-                        lastTxs = emptyList<Transaction>()
+                        lastTxs = emptyList<Tx>()
                     ),
                     onAddTxClicked = onAddTxClicked,
                     onTxDetailsClicked = onTxDetailsClicked
@@ -95,7 +95,7 @@ fun HomeScreen(
                         bankName = "Servus",
                         balance = 63.0f,
                         status = "No issues found",
-                        lastTxs = emptyList<Transaction>()
+                        lastTxs = emptyList<Tx>()
                     ),
                     onAddTxClicked = onAddTxClicked,
                     onTxDetailsClicked = onTxDetailsClicked
@@ -163,7 +163,7 @@ private fun Status(accountStatus: String) = Text(
 )
 
 @Composable
-private fun Transactions(modifier: Modifier, txs: List<Transaction>, onItemClicked: (Int) -> Unit) {
+private fun Transactions(modifier: Modifier, txs: List<Tx>, onItemClicked: (Int) -> Unit) {
     LazyColumn(modifier = modifier) {
         items(txs) { tx ->
             TxItem(tx = tx, onItemClicked = onItemClicked)
@@ -172,7 +172,7 @@ private fun Transactions(modifier: Modifier, txs: List<Transaction>, onItemClick
 }
 
 @Composable
-private fun TxItem(tx: Transaction, onItemClicked: (Int) -> Unit) {
+private fun TxItem(tx: Tx, onItemClicked: (Int) -> Unit) {
     Column(modifier = Modifier.padding(4.dp).clickable { onItemClicked(tx.id) }) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(

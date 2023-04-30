@@ -6,11 +6,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ui.view.TopBar
+import ui.view.default.DefaultTopBar
 
 @Composable
 fun TxDetailsScreen(txId: Int, onBackPressed: () -> Unit) = Column {
-    TopBar(
+    DefaultTopBar(
         title = "Details",
         onBackPressed = onBackPressed
     )

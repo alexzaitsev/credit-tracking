@@ -1,4 +1,4 @@
-package ui.view
+package ui.view.default
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
@@ -13,7 +13,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun TopBar(title: String, onBackPressed: () -> Unit) {
+fun DefaultTopBar(title: String, onBackPressed: () -> Unit) {
     TopAppBar(title = {
         Text(text = title)
     }, navigationIcon = {

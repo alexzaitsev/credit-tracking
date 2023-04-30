@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +27,7 @@ import data.getMockCIBCOksanaTxs
 import data.model.AccountInfo
 import data.model.Tx
 import kotlinx.datetime.LocalDateTime
+import ui.view.default.DefaultButton
 import kotlin.math.abs
 
 @Composable
@@ -129,7 +129,11 @@ private fun AccountInfo(
         txs = accountInfo.lastTxs,
         onItemClicked = onTxDetailsClicked
     )
-    AddBtn(modifier = Modifier.align(Alignment.CenterHorizontally), onClick = onAddTxClicked)
+    DefaultButton(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        onClick = onAddTxClicked,
+        text = "Add transaction"
+    )
 }
 
 @Composable
@@ -196,14 +200,6 @@ private fun TxItem(tx: Tx, onItemClicked: (Int) -> Unit) {
         }
     }
 }
-
-@Composable
-private fun AddBtn(modifier: Modifier, onClick: () -> Unit) = Button(
-    modifier = modifier,
-    onClick = onClick,
-    content = {
-        Text("Add transaction")
-    })
 
 private fun LocalDateTime.print() =
     "$year-${monthNumber.applyZero()}-${dayOfMonth.applyZero()}\n${hour.applyZero()}:${minute.applyZero()}"

@@ -8,7 +8,7 @@ import ui.screen.AddTxScreen
 import ui.screen.HomeScreen
 import ui.screen.TxDetailsScreen
 
-object HomeDest : Screen {
+internal object HomeDest : Screen {
 
     @Composable
     override fun Content() {
@@ -21,7 +21,7 @@ object HomeDest : Screen {
     }
 }
 
-object AddTxDest : Screen {
+internal object AddTxDest : Screen {
 
     @Composable
     override fun Content() {
@@ -29,10 +29,12 @@ object AddTxDest : Screen {
     }
 }
 
-data class TxDetailsDest(val txId: Int) : Screen {
+internal data class TxDetailsDest(val txId: Int) : Screen {
 
     @Composable
     override fun Content() {
-        TxDetailsScreen(txId = txId)
+        val navigator = LocalNavigator.currentOrThrow
+
+        TxDetailsScreen(txId = txId, onBackPressed = { navigator.pop() })
     }
 }

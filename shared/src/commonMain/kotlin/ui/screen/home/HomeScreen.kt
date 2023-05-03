@@ -36,16 +36,14 @@ import ui.view.default.DefaultButton
 @Composable
 fun HomeScreen(
     sm: HomeScreenModel,
-    onAddTxClicked: () -> Unit,
-    onTxDetailsClicked: (Int) -> Unit
+    onAddTxClicked: () -> Unit
 ) {
     val state by sm.state.collectAsState()
     when (state) {
         HomeScreenModel.State.Loading -> CircularProgressIndicator()
         is HomeScreenModel.State.Result -> ReadyViewState(
             accountInfo = (state as HomeScreenModel.State.Result).accountInfo,
-            onAddTxClicked = onAddTxClicked,
-            onTxDetailsClicked = onTxDetailsClicked
+            onAddTxClicked = onAddTxClicked
         )
     }
 }
@@ -53,8 +51,7 @@ fun HomeScreen(
 @Composable
 private fun ReadyViewState(
     accountInfo: AccountInfo,
-    onAddTxClicked: () -> Unit,
-    onTxDetailsClicked: (Int) -> Unit
+    onAddTxClicked: () -> Unit
 ) = Column(modifier = Modifier.padding(16.dp)) {
     Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
         UserName(modifier = Modifier.weight(1f), name = "Oksana")
@@ -67,8 +64,7 @@ private fun ReadyViewState(
                 modifier = Modifier.weight(1f)
                     .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
                 accountInfo = accountInfo,
-                onAddTxClicked = onAddTxClicked,
-                onTxDetailsClicked = onTxDetailsClicked
+                onAddTxClicked = onAddTxClicked
             )
             Spacer(modifier = Modifier.height(20.dp))
             AccountInfo(
@@ -82,8 +78,7 @@ private fun ReadyViewState(
                     status = "No issues found",
                     lastTxs = emptyList<Tx>()
                 ),
-                onAddTxClicked = onAddTxClicked,
-                onTxDetailsClicked = onTxDetailsClicked
+                onAddTxClicked = onAddTxClicked
             )
         }
         Spacer(modifier = Modifier.width(20.dp))
@@ -99,8 +94,7 @@ private fun ReadyViewState(
                     status = "No issues found",
                     lastTxs = emptyList<Tx>()
                 ),
-                onAddTxClicked = onAddTxClicked,
-                onTxDetailsClicked = onTxDetailsClicked
+                onAddTxClicked = onAddTxClicked
             )
             Spacer(modifier = Modifier.height(20.dp))
             AccountInfo(
@@ -112,8 +106,7 @@ private fun ReadyViewState(
                     status = "No issues found",
                     lastTxs = emptyList<Tx>()
                 ),
-                onAddTxClicked = onAddTxClicked,
-                onTxDetailsClicked = onTxDetailsClicked
+                onAddTxClicked = onAddTxClicked
             )
         }
     }
@@ -133,15 +126,13 @@ private fun UserName(modifier: Modifier, name: String) = Text(
 private fun AccountInfo(
     modifier: Modifier,
     accountInfo: AccountInfo,
-    onAddTxClicked: () -> Unit,
-    onTxDetailsClicked: (Int) -> Unit
+    onAddTxClicked: () -> Unit
 ) = Column(modifier = modifier) {
     BankNameAndBalance(bankName = accountInfo.bankName, balance = accountInfo.balance)
     Status(accountStatus = accountInfo.status)
     Transactions(
         modifier = Modifier.weight(1f),
-        txs = accountInfo.lastTxs,
-        onItemClicked = onTxDetailsClicked
+        txs = accountInfo.lastTxs
     )
     DefaultButton(
         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -184,14 +175,14 @@ private fun Status(accountStatus: String) = Text(
 private fun Transactions(modifier: Modifier, txs: List<Tx>, onItemClicked: (Int) -> Unit) {
     LazyColumn(modifier = modifier) {
         items(txs) { tx ->
-            TxItem(tx = tx, onItemClicked = onItemClicked)
+            TxItem(tx = tx)
         }
     }
 }
 
 @Composable
-private fun TxItem(tx: Tx, onItemClicked: (Int) -> Unit) {
-    Column(modifier = Modifier.padding(4.dp).clickable { onItemClicked(tx.id) }) {
+private fun TxItem(tx: Tx) {
+    Column(modifier = Modifier.padding(4.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 modifier = Modifier.padding(end = 8.dp),

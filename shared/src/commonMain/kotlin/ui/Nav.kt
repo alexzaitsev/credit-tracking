@@ -7,7 +7,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import ui.screen.AddTxScreen
-import ui.screen.TxDetailsScreen
 import ui.screen.home.HomeScreen
 import ui.screen.home.HomeScreenModel
 
@@ -23,8 +22,7 @@ internal object HomeDest : Screen {
 
         HomeScreen(
             sm = sm,
-            onAddTxClicked = { nav push AddTxDest },
-            onTxDetailsClicked = { txId -> nav push TxDetailsDest(txId) }
+            onAddTxClicked = { nav push AddTxDest }
         )
     }
 }
@@ -36,15 +34,5 @@ internal object AddTxDest : Screen {
         val nav = navigator
 
         AddTxScreen(onBackPressed = nav::pop)
-    }
-}
-
-internal data class TxDetailsDest(val txId: Int) : Screen {
-
-    @Composable
-    override fun Content() {
-        val nav = navigator
-
-        TxDetailsScreen(txId = txId, onBackPressed = nav::pop)
     }
 }

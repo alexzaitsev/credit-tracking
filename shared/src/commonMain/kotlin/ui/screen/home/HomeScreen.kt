@@ -1,4 +1,4 @@
-package ui.screen
+package ui.screen.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,8 +14,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import data.getMockCIBCOksanaTxs
 import data.model.AccountInfo
 import data.model.Tx
 import ui.util.print
@@ -33,75 +35,86 @@ import ui.view.default.DefaultButton
 
 @Composable
 fun HomeScreen(
+    sm: HomeScreenModel,
     onAddTxClicked: () -> Unit,
     onTxDetailsClicked: (Int) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-            UserName(modifier = Modifier.weight(1f), name = "Oksana")
-            UserName(modifier = Modifier.weight(1f), name = "Alex")
-        }
+    val state by sm.state.collectAsState()
+    when (state) {
+        HomeScreenModel.State.Loading -> CircularProgressIndicator()
+        is HomeScreenModel.State.Result -> ReadyViewState(
+            accountInfo = (state as HomeScreenModel.State.Result).accountInfo,
+            onAddTxClicked = onAddTxClicked,
+            onTxDetailsClicked = onTxDetailsClicked
+        )
+    }
+}
 
-        Row {
-            Column(modifier = Modifier.weight(1f)) {
-                AccountInfo(
-                    modifier = Modifier.weight(1f)
-                        .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
-                    accountInfo = AccountInfo(
-                        bankName = "CIBC",
-                        balance = 200.0f,
-                        status = "No issues found",
-                        lastTxs = getMockCIBCOksanaTxs()
-                    ),
-                    onAddTxClicked = onAddTxClicked,
-                    onTxDetailsClicked = onTxDetailsClicked
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                AccountInfo(
-                    modifier = Modifier.weight(1f).background(
-                        color = Color.LightGray,
-                        shape = RoundedCornerShape(5.dp)
-                    ),
-                    accountInfo = AccountInfo(
-                        bankName = "Servus",
-                        balance = -100.0f,
-                        status = "No issues found",
-                        lastTxs = emptyList<Tx>()
-                    ),
-                    onAddTxClicked = onAddTxClicked,
-                    onTxDetailsClicked = onTxDetailsClicked
-                )
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                AccountInfo(
-                    modifier = Modifier.weight(1f).background(
-                        color = Color.LightGray,
-                        shape = RoundedCornerShape(5.dp)
-                    ),
-                    accountInfo = AccountInfo(
-                        bankName = "CIBC",
-                        balance = -57.0f,
-                        status = "No issues found",
-                        lastTxs = emptyList<Tx>()
-                    ),
-                    onAddTxClicked = onAddTxClicked,
-                    onTxDetailsClicked = onTxDetailsClicked
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                AccountInfo(
-                    modifier = Modifier.weight(1f)
-                        .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
-                    accountInfo = AccountInfo(
-                        bankName = "Servus",
-                        balance = 63.0f,
-                        status = "No issues found",
-                        lastTxs = emptyList<Tx>()
-                    ),
-                    onAddTxClicked = onAddTxClicked,
-                    onTxDetailsClicked = onTxDetailsClicked
-                )
-            }
+@Composable
+private fun ReadyViewState(
+    accountInfo: AccountInfo,
+    onAddTxClicked: () -> Unit,
+    onTxDetailsClicked: (Int) -> Unit
+) = Column(modifier = Modifier.padding(16.dp)) {
+    Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+        UserName(modifier = Modifier.weight(1f), name = "Oksana")
+        UserName(modifier = Modifier.weight(1f), name = "Alex")
+    }
+
+    Row {
+        Column(modifier = Modifier.weight(1f)) {
+            AccountInfo(
+                modifier = Modifier.weight(1f)
+                    .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
+                accountInfo = accountInfo,
+                onAddTxClicked = onAddTxClicked,
+                onTxDetailsClicked = onTxDetailsClicked
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            AccountInfo(
+                modifier = Modifier.weight(1f).background(
+                    color = Color.LightGray,
+                    shape = RoundedCornerShape(5.dp)
+                ),
+                accountInfo = AccountInfo(
+                    bankName = "Servus",
+                    balance = -100.0f,
+                    status = "No issues found",
+                    lastTxs = emptyList<Tx>()
+                ),
+                onAddTxClicked = onAddTxClicked,
+                onTxDetailsClicked = onTxDetailsClicked
+            )
+        }
+        Spacer(modifier = Modifier.width(20.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            AccountInfo(
+                modifier = Modifier.weight(1f).background(
+                    color = Color.LightGray,
+                    shape = RoundedCornerShape(5.dp)
+                ),
+                accountInfo = AccountInfo(
+                    bankName = "CIBC",
+                    balance = -57.0f,
+                    status = "No issues found",
+                    lastTxs = emptyList<Tx>()
+                ),
+                onAddTxClicked = onAddTxClicked,
+                onTxDetailsClicked = onTxDetailsClicked
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            AccountInfo(
+                modifier = Modifier.weight(1f)
+                    .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
+                accountInfo = AccountInfo(
+                    bankName = "Servus",
+                    balance = 63.0f,
+                    status = "No issues found",
+                    lastTxs = emptyList<Tx>()
+                ),
+                onAddTxClicked = onAddTxClicked,
+                onTxDetailsClicked = onTxDetailsClicked
+            )
         }
     }
 }

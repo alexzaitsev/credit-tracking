@@ -22,7 +22,8 @@ kotlin {
             baseName = "shared"
             isStatic = true
         }
-        extraSpecAttributes["resources"] = "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
+        extraSpecAttributes["resources"] =
+            "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
     }
 
     sourceSets {
@@ -35,6 +36,8 @@ kotlin {
                 implementation(compose.components.resources)
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
                 implementation("cafe.adriel.voyager:voyager-navigator:1.0.0-rc04")
+                implementation("io.arrow-kt:arrow-core:1.2.0-RC")
+                implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0-RC")
             }
         }
         val androidMain by getting {

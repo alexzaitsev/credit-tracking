@@ -5,5 +5,5 @@ import ui.screen.home.HomeScreenModel
 
 val uiModule = module {
 
-    factory { HomeScreenModel(get()) }
+    single { HomeScreenModel(get()) }
 }

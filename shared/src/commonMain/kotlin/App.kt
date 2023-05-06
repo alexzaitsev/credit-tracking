@@ -1,7 +1,7 @@
-
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.navigator.Navigator
+import common.util.OneTimeUi
 import data.dataModule
 import org.koin.core.context.startKoin
 import ui.HomeDest
@@ -9,7 +9,9 @@ import ui.uiModule
 
 @Composable
 fun App() {
-    initKoin()
+    OneTimeUi {
+        initKoin()
+    }
 
     MaterialTheme {
         Navigator(
@@ -20,7 +22,7 @@ fun App() {
 
 expect fun getPlatformName(): String
 
-fun initKoin(){
+fun initKoin() {
     startKoin {
         modules(dataModule, uiModule)
     }

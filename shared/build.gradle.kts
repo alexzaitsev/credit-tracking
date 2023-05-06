@@ -28,6 +28,7 @@ kotlin {
 
     sourceSets {
         val ktorVersion = "2.3.0"
+        val koinVersion = "3.2.0"
 
         val commonMain by getting {
             dependencies {
@@ -42,6 +43,7 @@ kotlin {
                 implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0-RC")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+                implementation("io.insert-koin:koin-core:$koinVersion")
             }
         }
         val androidMain by getting {

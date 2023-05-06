@@ -23,8 +23,4 @@ class DataRepository(
 //        ).right()
         return getMockCIBCOksanaAccountInfo().right()
     }
-
-    suspend fun getTx(id: Int) {}
-
-    fun addTx() {}
 }

@@ -1,7 +1,6 @@
 package ui.screen.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -172,7 +171,7 @@ private fun Status(accountStatus: String) = Text(
 )
 
 @Composable
-private fun Transactions(modifier: Modifier, txs: List<Tx>, onItemClicked: (Int) -> Unit) {
+private fun Transactions(modifier: Modifier, txs: List<Tx>) {
     LazyColumn(modifier = modifier) {
         items(txs) { tx ->
             TxItem(tx = tx)

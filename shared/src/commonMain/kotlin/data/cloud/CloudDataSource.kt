@@ -1,12 +1,11 @@
-package data.firestore
+package data.cloud
 
-import data.firestore.model.FirestoreAccountInfo
 import kotlinx.coroutines.delay
 
-class FirestoreDataSource(val firestore: Firestore) {
+class CloudDataSource {
 
     suspend fun getAccountInfo(): FirestoreAccountInfo {
-        println(firestore.greeting())
+        println(firestore.test())
 //        val db = Firebase.firestore
 //        val alexCibcDocument = db.collection("account").document("alex-cibc").get()
 //        val alexCibc = alexCibcDocument.data(FirestoreAccountInfo.serializer())

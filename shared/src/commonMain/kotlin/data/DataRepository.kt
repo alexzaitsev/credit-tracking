@@ -2,15 +2,15 @@ package data
 
 import arrow.core.Either
 import arrow.core.right
-import data.firestore.FirestoreDataSource
+import data.cloud.CloudDataSource
 import data.model.AccountInfo
 
 class DataRepository(
-    private val firestoreDataSource: FirestoreDataSource
+    private val cloudDataSource: CloudDataSource
 ) {
 
     suspend fun getAccountInfo(id: Int): Either<Exception, AccountInfo> {
-        val accInfo = firestoreDataSource.getAccountInfo()
+        val accInfo = cloudDataSource.getAccountInfo()
         println(accInfo)
 
 //        val apiAccountInfo = apiDataSource.getAccountInfo()

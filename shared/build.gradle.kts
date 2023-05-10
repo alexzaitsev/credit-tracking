@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
+    kotlin("plugin.serialization") version "1.8.10"
     id("com.android.library")
     id("org.jetbrains.compose")
 }
@@ -37,12 +38,11 @@ kotlin {
                 implementation(compose.material)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
                 implementation("cafe.adriel.voyager:voyager-navigator:1.0.0-rc04")
                 implementation("io.arrow-kt:arrow-core:1.2.0-RC")
                 implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0-RC")
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 implementation("io.insert-koin:koin-core:$koinVersion")
             }
         }

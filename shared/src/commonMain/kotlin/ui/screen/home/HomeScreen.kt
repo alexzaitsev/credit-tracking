@@ -5,12 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
@@ -25,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import data.model.AccountInfo
+import data.model.Account
 import data.model.Tx
 import ui.util.print
 import ui.util.printAmount
@@ -41,7 +42,7 @@ fun HomeScreen(
     when (state) {
         HomeScreenModel.State.Loading -> CircularProgressIndicator()
         is HomeScreenModel.State.Result -> ReadyViewState(
-            accountInfo = (state as HomeScreenModel.State.Result).accountInfo,
+            accounts = (state as HomeScreenModel.State.Result).accounts,
             onAddTxClicked = onAddTxClicked
         )
     }
@@ -49,89 +50,37 @@ fun HomeScreen(
 
 @Composable
 private fun ReadyViewState(
-    accountInfo: AccountInfo,
+    accounts: List<Account>,
     onAddTxClicked: () -> Unit
 ) = Column(modifier = Modifier.padding(16.dp)) {
-    Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-        UserName(modifier = Modifier.weight(1f), name = "Oksana")
-        UserName(modifier = Modifier.weight(1f), name = "Alex")
-    }
 
-    Row {
-        Column(modifier = Modifier.weight(1f)) {
-            AccountInfo(
-                modifier = Modifier.weight(1f)
+    // TODO general statuses here
+    Text("data below")
+
+    LazyRow {
+        items(accounts) { account ->
+            AccountItem(
+                modifier = Modifier.width(200.dp).fillMaxHeight()
                     .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
-                accountInfo = accountInfo,
-                onAddTxClicked = onAddTxClicked
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            AccountInfo(
-                modifier = Modifier.weight(1f).background(
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(5.dp)
-                ),
-                accountInfo = AccountInfo(
-                    bankName = "Servus",
-                    balance = -100.0f,
-                    status = "No issues found",
-                    lastTxs = emptyList<Tx>()
-                ),
-                onAddTxClicked = onAddTxClicked
-            )
-        }
-        Spacer(modifier = Modifier.width(20.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            AccountInfo(
-                modifier = Modifier.weight(1f).background(
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(5.dp)
-                ),
-                accountInfo = AccountInfo(
-                    bankName = "CIBC",
-                    balance = -57.0f,
-                    status = "No issues found",
-                    lastTxs = emptyList<Tx>()
-                ),
-                onAddTxClicked = onAddTxClicked
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            AccountInfo(
-                modifier = Modifier.weight(1f)
-                    .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
-                accountInfo = AccountInfo(
-                    bankName = "Servus",
-                    balance = 63.0f,
-                    status = "No issues found",
-                    lastTxs = emptyList<Tx>()
-                ),
+                account = account,
                 onAddTxClicked = onAddTxClicked
             )
         }
     }
 }
 
-
 @Composable
-private fun UserName(modifier: Modifier, name: String) = Text(
-    modifier = modifier,
-    textAlign = TextAlign.Center,
-    fontWeight = FontWeight.Bold,
-    fontSize = 22.sp,
-    text = name
-)
-
-@Composable
-private fun AccountInfo(
+private fun AccountItem(
     modifier: Modifier,
-    accountInfo: AccountInfo,
+    account: Account,
     onAddTxClicked: () -> Unit
 ) = Column(modifier = modifier) {
-    BankNameAndBalance(bankName = accountInfo.bankName, balance = accountInfo.balance)
-    Status(accountStatus = accountInfo.status)
+    UserName(name = account.personName)
+    BankNameAndBalance(bankName = account.bankName, balance = account.balance)
+    Status(accountStatus = "No issues")
     Transactions(
         modifier = Modifier.weight(1f),
-        txs = accountInfo.lastTxs
+        txs = account.lastTxs
     )
     DefaultButton(
         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -139,6 +88,15 @@ private fun AccountInfo(
         text = "Add transaction"
     )
 }
+
+@Composable
+private fun UserName(modifier: Modifier = Modifier, name: String) = Text(
+    modifier = modifier,
+    textAlign = TextAlign.Center,
+    fontWeight = FontWeight.Bold,
+    fontSize = 22.sp,
+    text = name
+)
 
 @Composable
 private fun BankNameAndBalance(bankName: String, balance: Float) =

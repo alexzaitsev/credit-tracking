@@ -1,19 +1,21 @@
 package data.cloud
 
-import kotlinx.coroutines.delay
+import data.cloud.model.CloudAccount
+import data.model.Account
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-class CloudDataSource {
+class CloudDataSource(private val cloudRealm: CloudRealm) {
 
-    suspend fun getAccountInfo(): FirestoreAccountInfo {
-        println(firestore.test())
-//        val db = Firebase.firestore
-//        val alexCibcDocument = db.collection("account").document("alex-cibc").get()
-//        val alexCibc = alexCibcDocument.data(FirestoreAccountInfo.serializer())
-        delay(3000L)
-        return FirestoreAccountInfo(
-            bankName = "",
-            personName = "",
-            balance = 0f
-        )
-    }
+    suspend fun observeAccounts(): Flow<List<Account>> =
+        cloudRealm.read<CloudAccount>().map {
+            it.list.map { cloudAccount ->
+                Account(
+                    bankName = cloudAccount.bankName,
+                    personName = cloudAccount.personName,
+                    balance = cloudAccount.balance,
+                    lastTxs = emptyList() // TODO stub
+                )
+            }
+        }
 }

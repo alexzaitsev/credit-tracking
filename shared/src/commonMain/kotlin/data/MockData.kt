@@ -1,6 +1,6 @@
 package data
 
-import data.model.AccountInfo
+import data.model.Account
 import data.model.Tx
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -8,10 +8,10 @@ import kotlinx.datetime.toLocalDateTime
 
 private val tz = TimeZone.of("America/Edmonton")
 
-fun getMockCIBCOksanaAccountInfo() = AccountInfo(
+fun getMockCIBCOksanaAccountInfo() = Account(
     bankName = "CIBC",
+    personName = "Oksana",
     balance = 100f,
-    status = "No issues",
     lastTxs = getMockCIBCOksanaTxs()
 )
 

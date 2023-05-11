@@ -1,8 +1,8 @@
 package data.model
 
-data class AccountInfo(
+data class Account(
     val bankName: String,
+    val personName: String,
     val balance: Float,
-    val status: String,
     val lastTxs: List<Tx>
 )

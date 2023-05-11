@@ -4,6 +4,7 @@ plugins {
     kotlin("plugin.serialization") version "1.8.10"
     id("com.android.library")
     id("org.jetbrains.compose")
+    id("io.realm.kotlin")
 }
 
 kotlin {
@@ -28,9 +29,6 @@ kotlin {
     }
 
     sourceSets {
-        val ktorVersion = "2.3.0"
-        val koinVersion = "3.2.0"
-
         val commonMain by getting {
             dependencies {
                 implementation(compose.runtime)
@@ -43,7 +41,8 @@ kotlin {
                 implementation("cafe.adriel.voyager:voyager-navigator:1.0.0-rc04")
                 implementation("io.arrow-kt:arrow-core:1.2.0-RC")
                 implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0-RC")
-                implementation("io.insert-koin:koin-core:$koinVersion")
+                implementation("io.insert-koin:koin-core:3.2.0")
+                implementation("io.realm.kotlin:library-sync:1.8.0")
             }
         }
         val androidMain by getting {
@@ -51,7 +50,6 @@ kotlin {
                 api("androidx.activity:activity-compose:1.7.1")
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.10.0")
-                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
             }
         }
         val iosX64Main by getting
@@ -63,7 +61,6 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
-                implementation("io.ktor:ktor-client-darwin:$ktorVersion")
             }
         }
     }

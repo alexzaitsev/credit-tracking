@@ -3,7 +3,8 @@ package ui.screen.home
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.coroutineScope
 import data.DataRepository
-import data.model.AccountInfo
+import data.model.Account
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HomeScreenModel(
@@ -12,18 +13,16 @@ class HomeScreenModel(
 
     sealed class State {
         object Loading : State()
-        data class Result(val accountInfo: AccountInfo) : State()
+        data class Result(val accounts: List<Account>) : State()
     }
 
     init {
-        getData()
+        observeData()
     }
 
-    fun getData() = coroutineScope.launch {
-        mutableState.value =
-            State.Result(
-                accountInfo = dataRepository.getAccountInfo(-1).getOrNone().getOrNull()
-                    ?: throw IllegalStateException("null")
-            )
+    private fun observeData() = coroutineScope.launch {
+        dataRepository.observeAccounts().collectLatest { accounts: List<Account> ->
+            mutableState.value = State.Result(accounts)
+        }
     }
 }

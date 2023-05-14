@@ -1,6 +1,7 @@
 package data.cloud
 
 import data.cloud.model.CloudAccount
+import data.util.asCommonFlow
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.mongodb.App
@@ -32,16 +33,16 @@ class CloudRealm(private val realmApp: App) {
         }
     }
 
-    suspend fun <T> safe(block: suspend () -> T): T {
+    suspend fun <T> safeCall(block: suspend () -> T): T {
         init()
         return block()
     }
 
-    suspend inline fun <reified T : RealmObject> read(): Flow<ResultsChange<T>> = safe {
-        realm?.query<T>()?.asFlow() ?: emptyFlow()
+    suspend inline fun <reified T : RealmObject> read(): Flow<ResultsChange<T>> = safeCall {
+        realm?.query<T>()?.asCommonFlow() ?: emptyFlow()
     }
 
-    suspend fun <T : RealmObject> save(data: T) = safe {
+    suspend fun <T : RealmObject> save(data: T) = safeCall {
         realm?.write {
             copyToRealm(data)
         }

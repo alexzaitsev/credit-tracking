@@ -23,7 +23,7 @@ class CloudRealm(private val realmApp: App) {
                 .initialSubscriptions { realm ->
                     add(
                         query = realm.query<CloudAccount>(),
-                        name = "account",
+                        name = REALM_COLLECTION_ACCOUNT,
                         updateExisting = true
                     )
                 }

@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.map
 class CloudDataSource(private val cloudRealm: CloudRealm) {
 
     suspend fun observeAccounts(): Flow<List<Account>> =
-        cloudRealm.read<CloudAccount>().map {
-            it.list.map { cloudAccount ->
+        cloudRealm.readCollection<CloudAccount>().map { list ->
+            list.map { cloudAccount ->
                 Account(
                     bankName = cloudAccount.bankName,
                     personName = cloudAccount.personName,

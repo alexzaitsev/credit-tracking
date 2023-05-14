@@ -1,16 +1,15 @@
 package data.cloud
 
 import data.cloud.model.CloudAccount
-import data.util.asCommonFlow
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.sync.SyncConfiguration
-import io.realm.kotlin.notifications.ResultsChange
 import io.realm.kotlin.types.RealmObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 
 class CloudRealm(private val realmApp: App) {
 
@@ -38,8 +37,8 @@ class CloudRealm(private val realmApp: App) {
         return block()
     }
 
-    suspend inline fun <reified T : RealmObject> read(): Flow<ResultsChange<T>> = safeCall {
-        realm?.query<T>()?.asCommonFlow() ?: emptyFlow()
+    suspend inline fun <reified T : RealmObject> readCollection(): Flow<List<T>> = safeCall {
+        realm?.query<T>()?.asFlow()?.map { it.list } ?: emptyFlow()
     }
 
     suspend fun <T : RealmObject> save(data: T) = safeCall {

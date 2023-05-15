@@ -11,7 +11,7 @@ fun LocalDateTime.print(twoLines: Boolean = false) =
 
 private fun Int.applyZero() = if (this < 10) "0$this" else "$this"
 
-val Float.zeroBasedColor: Color
+val Double.zeroBasedColor: Color
     get() = if (this < 0) Color.Red else Color.Green
 
-fun Float.printAmount() = if (this < 0) "-$${abs(this)}" else "$$this"
+fun Double.printAmount() = if (this < 0) "-$${abs(this)}" else "$$this"

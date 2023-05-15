@@ -20,6 +20,10 @@ class CloudRealm(private val realmApp: App) {
             val user = realmApp.login(Credentials.anonymous())
             val config = SyncConfiguration
                 .Builder(user, setOf(CloudAccount::class))
+                .errorHandler { session, error ->
+                    println("REALM ERROR")
+                    println(error)
+                }
                 .initialSubscriptions { realm ->
                     add(
                         query = realm.query<CloudAccount>(),

@@ -99,7 +99,7 @@ private fun UserName(modifier: Modifier = Modifier, name: String) = Text(
 )
 
 @Composable
-private fun BankNameAndBalance(bankName: String, balance: Float) =
+private fun BankNameAndBalance(bankName: String, balance: Double) =
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,

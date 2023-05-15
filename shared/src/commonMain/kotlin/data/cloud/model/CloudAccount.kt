@@ -12,5 +12,5 @@ class CloudAccount : RealmObject {
     var _id: ObjectId = ObjectId()
     var bankName: String = ""
     var personName: String = ""
-    var balance: Float = 0f
+    var balance: Double = 0.0
 }

@@ -4,12 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -32,6 +30,7 @@ import ui.util.print
 import ui.util.printAmount
 import ui.util.zeroBasedColor
 import ui.view.default.DefaultButton
+import ui.view.default.DefaultSpacer
 
 @Composable
 fun HomeScreen(
@@ -55,13 +54,18 @@ private fun ReadyViewState(
 ) = Column(modifier = Modifier.padding(16.dp)) {
 
     // TODO general statuses here
-    Text("data below")
+    Text("status here")
 
-    LazyRow {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         items(accounts) { account ->
             AccountItem(
-                modifier = Modifier.width(200.dp).fillMaxHeight()
-                    .background(color = Color.Gray, shape = RoundedCornerShape(5.dp)),
+                modifier = Modifier.width(300.dp).wrapContentHeight()
+                    .background(
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(5.dp)
+                    ),
                 account = account,
                 onAddTxClicked = onAddTxClicked
             )
@@ -76,12 +80,16 @@ private fun AccountItem(
     onAddTxClicked: () -> Unit
 ) = Column(modifier = modifier) {
     UserName(name = account.personName)
-    BankNameAndBalance(bankName = account.bankName, balance = account.balance)
-    Status(accountStatus = "No issues")
-    Transactions(
-        modifier = Modifier.weight(1f),
-        txs = account.lastTxs
-    )
+    DefaultSpacer(4.dp)
+
+    BankName(name = account.bankName)
+    DefaultSpacer(4.dp)
+
+    Balance(balance = account.balance)
+    DefaultSpacer(4.dp)
+
+    Transactions(txs = account.lastTxs)
+
     DefaultButton(
         modifier = Modifier.align(Alignment.CenterHorizontally),
         onClick = onAddTxClicked,
@@ -90,8 +98,8 @@ private fun AccountItem(
 }
 
 @Composable
-private fun UserName(modifier: Modifier = Modifier, name: String) = Text(
-    modifier = modifier,
+private fun UserName(name: String) = Text(
+    modifier = Modifier.fillMaxWidth(),
     textAlign = TextAlign.Center,
     fontWeight = FontWeight.Bold,
     fontSize = 22.sp,
@@ -99,25 +107,23 @@ private fun UserName(modifier: Modifier = Modifier, name: String) = Text(
 )
 
 @Composable
-private fun BankNameAndBalance(bankName: String, balance: Double) =
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 20.sp,
-            text = bankName
-        )
-        Spacer(modifier = Modifier.size(4.dp))
-        Text(
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 20.sp,
-            color = balance.zeroBasedColor,
-            text = "$balance"
-        )
-    }
+private fun BankName(name: String) = Text(
+    modifier = Modifier.fillMaxWidth(),
+    textAlign = TextAlign.Center,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 20.sp,
+    text = name
+)
+
+@Composable
+private fun Balance(balance: Double) = Text(
+    modifier = Modifier.fillMaxWidth(),
+    textAlign = TextAlign.Center,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 20.sp,
+    color = balance.zeroBasedColor,
+    text = "$balance"
+)
 
 @Composable
 private fun Status(accountStatus: String) = Text(
@@ -129,8 +135,8 @@ private fun Status(accountStatus: String) = Text(
 )
 
 @Composable
-private fun Transactions(modifier: Modifier, txs: List<Tx>) {
-    LazyColumn(modifier = modifier) {
+private fun Transactions(txs: List<Tx>) {
+    LazyColumn {
         items(txs) { tx ->
             TxItem(tx = tx)
         }

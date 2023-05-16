@@ -11,6 +11,8 @@ kotlin {
             dependencies {
                 implementation(project(":shared"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+                implementation("io.insert-koin:koin-core:3.3.2")
+                implementation("io.insert-koin:koin-android:3.3.2")
             }
         }
     }

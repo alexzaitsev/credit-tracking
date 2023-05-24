@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -30,6 +29,7 @@ import ui.util.print
 import ui.util.printAmount
 import ui.util.zeroBasedColor
 import ui.view.default.DefaultButton
+import ui.view.default.DefaultProgress
 import ui.view.default.DefaultSpacer
 
 @Composable
@@ -39,7 +39,7 @@ fun HomeScreen(
 ) {
     val state by sm.state.collectAsState()
     when (state) {
-        HomeScreenModel.State.Loading -> CircularProgressIndicator()
+        HomeScreenModel.State.Loading -> DefaultProgress()
         is HomeScreenModel.State.Result -> ReadyViewState(
             accounts = (state as HomeScreenModel.State.Result).accounts,
             onAddTxClicked = onAddTxClicked

@@ -1,14 +1,15 @@
 package ui
 
 import androidx.compose.runtime.Composable
-
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import ui.screen.AddTxScreen
+import org.koin.core.parameter.parametersOf
+import ui.screen.addTx.AddTxScreen
+import ui.screen.addTx.AddTxScreenModel
 import ui.screen.home.HomeScreen
 import ui.screen.home.HomeScreenModel
 
@@ -29,12 +30,17 @@ internal object HomeDest : Screen, KoinComponent {
     }
 }
 
-internal object AddTxDest : Screen {
+internal object AddTxDest : Screen, KoinComponent {
 
     @Composable
     override fun Content() {
         val nav = navigator
+        val sm = get<AddTxScreenModel> { parametersOf("alex-cibc") }
 
-        AddTxScreen(onBackPressed = nav::pop)
+        AddTxScreen(
+            sm = sm,
+            onBackPressed = nav::pop,
+            onAdded = nav::pop
+        )
     }
 }

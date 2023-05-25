@@ -39,7 +39,7 @@ internal object AddTxDest : Screen, KoinComponent {
 
         AddTxScreen(
             sm = sm,
-            onBackPressed = nav::pop,
+            onBackClicked = nav::pop,
             onAdded = nav::pop
         )
     }

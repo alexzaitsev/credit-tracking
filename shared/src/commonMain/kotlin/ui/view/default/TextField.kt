@@ -12,6 +12,7 @@ fun DefaultTextField(
     modifier: Modifier = Modifier,
     defaultValue: String = "",
     hint: String? = null,
+    isError: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     minLines: Int = 1,
     maxLines: Int = 1,
@@ -29,6 +30,7 @@ fun DefaultTextField(
                 Text(text = hint)
             }
         },
+        isError = isError,
         onValueChange = { newVal: String ->
             tfValue.value = newVal
             onTextChanged(newVal)

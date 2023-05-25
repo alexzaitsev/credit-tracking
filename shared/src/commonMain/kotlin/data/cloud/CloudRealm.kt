@@ -43,16 +43,17 @@ class CloudRealm(private val realmApp: App) {
         }
     }
 
-    suspend fun <T> safeCall(block: suspend () -> T): T {
+    suspend fun <T> safeCall(block: suspend (Realm?) -> T): T {
         init()
-        return block()
+        return block(realm)
     }
 
-    suspend inline fun <reified T : RealmObject> readCollection(): Flow<List<T>> = safeCall {
-        realm?.query<T>()?.asFlow()?.map { it.list } ?: emptyFlow()
-    }
+    suspend inline fun <reified T : RealmObject> readCollection(): Flow<List<T>> =
+        safeCall { realm ->
+            realm?.query<T>()?.asFlow()?.map { it.list } ?: emptyFlow()
+        }
 
-    suspend fun <T : RealmObject> save(data: T) = safeCall {
+    suspend fun <T : RealmObject> save(data: T) = safeCall { realm ->
         realm?.write {
             copyToRealm(data)
         }

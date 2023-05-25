@@ -52,10 +52,4 @@ class CloudRealm(private val realmApp: App) {
         safeCall { realm ->
             realm?.query<T>()?.asFlow()?.map { it.list } ?: emptyFlow()
         }
-
-    suspend fun <T : RealmObject> save(data: T) = safeCall { realm ->
-        realm?.write {
-            copyToRealm(data)
-        }
-    }
 }

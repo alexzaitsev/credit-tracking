@@ -18,7 +18,7 @@ class DataRepository(
         }.map { accounts ->
             accounts.map { account: Account ->
                 account.copy(
-                    lastTxs = cloudDataSource.getLastTx(accountId = account.id)
+                    lastTxs = cloudDataSource.getLastTx(accountId = account.id).map { it.toData() }
                 )
             }
         }

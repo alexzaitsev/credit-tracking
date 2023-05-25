@@ -122,7 +122,7 @@ private fun Balance(balance: Double) = Text(
     fontWeight = FontWeight.SemiBold,
     fontSize = 20.sp,
     color = balance.zeroBasedColor,
-    text = "$balance"
+    text = balance.printAmount()
 )
 
 @Composable

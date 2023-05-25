@@ -35,7 +35,7 @@ import ui.view.default.DefaultSpacer
 @Composable
 fun HomeScreen(
     sm: HomeScreenModel,
-    onAddTxClicked: () -> Unit
+    onAddTxClicked: (String) -> Unit
 ) {
     val state by sm.state.collectAsState()
     when (state) {
@@ -50,7 +50,7 @@ fun HomeScreen(
 @Composable
 private fun ReadyViewState(
     accounts: List<Account>,
-    onAddTxClicked: () -> Unit
+    onAddTxClicked: (String) -> Unit
 ) = Column(modifier = Modifier.padding(16.dp)) {
 
     // TODO general statuses here
@@ -67,7 +67,7 @@ private fun ReadyViewState(
                         shape = RoundedCornerShape(5.dp)
                     ),
                 account = account,
-                onAddTxClicked = onAddTxClicked
+                onAddTxClicked = { onAddTxClicked(account.id) }
             )
         }
     }

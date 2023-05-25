@@ -22,3 +22,13 @@ fun CloudAccount.toData() = Account(
     balance = balance,
     lastTxs = emptyList() // TODO stub
 )
+
+fun Account.toCloud(): CloudAccount {
+    val account = this
+    return CloudAccount().apply {
+        _id = account.id
+        bankName = account.bankName
+        personName = account.personName
+        balance = account.balance
+    }
+}

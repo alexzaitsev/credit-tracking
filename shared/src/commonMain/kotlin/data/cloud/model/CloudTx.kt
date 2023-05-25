@@ -31,11 +31,11 @@ fun CloudTx.toData() = Tx(
     comment = comment
 )
 
-fun Tx.toCloud(accountId: String): CloudTx {
+fun Tx.toCloud(accId: String): CloudTx {
     val tx = this
     val instant = tx.dateTime.toInstant(TIME_ZONE)
     return CloudTx().apply {
-        this.accountId = accountId
+        accountId = accId
         timestamp = RealmInstant.from(
             epochSeconds = instant.epochSeconds,
             nanosecondAdjustment = instant.nanosecondsOfSecond

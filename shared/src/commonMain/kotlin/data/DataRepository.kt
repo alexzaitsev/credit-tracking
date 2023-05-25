@@ -13,12 +13,16 @@ class DataRepository(
 ) {
 
     suspend fun observeAccounts(): Flow<List<Account>> {
-        return cloudDataSource.observeAccounts().map { list ->
-            list.map { it.toData() }
+        return cloudDataSource.observeAccounts().map { cloudAccounts ->
+            cloudAccounts.map { it.toData() }
+        }.map { accounts ->
+            accounts.map { account: Account ->
+                account
+            }
         }
     }
 
     suspend fun addTx(tx: Tx, accountId: String) {
-        cloudDataSource.addTx(tx.toCloud(accountId = accountId))
+        cloudDataSource.addTx(tx.toCloud(accId = accountId))
     }
 }

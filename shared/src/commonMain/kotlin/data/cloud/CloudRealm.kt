@@ -1,6 +1,7 @@
 package data.cloud
 
 import data.cloud.model.CloudAccount
+import data.cloud.model.CloudTx
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.mongodb.App
@@ -19,17 +20,23 @@ class CloudRealm(private val realmApp: App) {
         if (realm == null) {
             val user = realmApp.login(Credentials.anonymous())
             val config = SyncConfiguration
-                .Builder(user, setOf(CloudAccount::class))
-                .errorHandler { session, error ->
-                    println("REALM ERROR")
-                    println(error)
-                }
+                .Builder(user, setOf(CloudAccount::class, CloudTx::class))
+                .waitForInitialRemoteData()
                 .initialSubscriptions { realm ->
                     add(
                         query = realm.query<CloudAccount>(),
                         name = REALM_COLLECTION_ACCOUNT,
                         updateExisting = true
                     )
+                    add(
+                        query = realm.query<CloudTx>(),
+                        name = REALM_COLLECTION_TX,
+                        updateExisting = true
+                    )
+                }
+                .errorHandler { session, error ->
+                    println("REALM ERROR")
+                    println(error)
                 }
                 .build()
             realm = Realm.open(config)

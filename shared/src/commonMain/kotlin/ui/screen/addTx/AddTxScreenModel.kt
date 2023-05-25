@@ -28,5 +28,6 @@ class AddTxScreenModel(
             ),
             accountId = accountId
         )
+        mutableState.value = State.Added
     }
 }

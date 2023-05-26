@@ -2,6 +2,7 @@ package ui.screen.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -178,14 +179,18 @@ private fun AccountItem(
     account: Account,
     onAddTxClicked: () -> Unit
 ) = Column(modifier = modifier) {
-    UserName(name = account.personName)
-    DefaultSpacer(4.dp)
-
-    BankName(name = account.bankName)
-    DefaultSpacer(4.dp)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        UserName(name = account.personName)
+        DefaultSpacer(8.dp)
+        BankName(name = account.bankName)
+    }
 
     Balance(balance = account.balance)
-    DefaultSpacer(4.dp)
+    DefaultSpacer(16.dp)
 
     Transactions(
         modifier = Modifier.weight(1f),
@@ -201,7 +206,6 @@ private fun AccountItem(
 
 @Composable
 private fun UserName(name: String) = Text(
-    modifier = Modifier.fillMaxWidth(),
     textAlign = TextAlign.Center,
     fontWeight = FontWeight.Bold,
     fontSize = 22.sp,
@@ -210,10 +214,9 @@ private fun UserName(name: String) = Text(
 
 @Composable
 private fun BankName(name: String) = Text(
-    modifier = Modifier.fillMaxWidth(),
     textAlign = TextAlign.Center,
     fontWeight = FontWeight.SemiBold,
-    fontSize = 20.sp,
+    fontSize = 22.sp,
     text = name
 )
 

@@ -56,13 +56,17 @@ fun HomeScreen(
 private fun ReadyViewState(
     summary: HomeSummary,
     onAddTxClicked: (String) -> Unit
-) = Column(modifier = Modifier.padding(vertical = 16.dp)) {
+) = Column {
 
-    // TODO general statuses here
     Text(
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = summary.numOfAccountsWithIssue.issueBasedColor)
+            .padding(16.dp),
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.Bold,
         text = "NUMBER OF ISSUES ${summary.numOfAccountsWithIssue}",
-        color = summary.numOfAccountsWithIssue.issueBasedColor
+        color = Color.White
     )
 
     DefaultSpacer(16.dp)
@@ -72,6 +76,8 @@ private fun ReadyViewState(
         accounts = summary.accounts,
         onAddTxClicked = onAddTxClicked
     )
+
+    DefaultSpacer(16.dp)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -93,21 +99,25 @@ fun AccountsList(
         val (account, status) = accounts[index]
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.weight(0.1f))
+
             when (status) {
                 is AccountStatus.Issue -> Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
                     color = Color.Red,
                     text = status.message
                 )
 
                 AccountStatus.Ok -> {}
             }
-            val bg = when(status) {
+
+            Spacer(modifier = Modifier.weight(0.1f))
+
+            val bg = when (status) {
                 is AccountStatus.Issue -> Color.Red.copy(alpha = 0.6f)
                 AccountStatus.Ok -> Color.LightGray
             }
-
-            Spacer(modifier = Modifier.weight(0.2f))
-
             Card(
                 shape = RoundedCornerShape(10.dp),
                 elevation = 10.dp,

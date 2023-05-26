@@ -25,7 +25,8 @@ class HomeScreenModel(
         dataRepository.observeAccounts().collectLatest { accounts: List<Account> ->
             val accountExtended = accounts.mapIndexed { index, account ->
                 // TODO stub data
-                val status = if (index == 0 || index == 1) AccountStatus.Issue("2 weeks no usage") else AccountStatus.Ok
+                val status =
+                    if (index == 0 || index == 1) AccountStatus.Issue("2 weeks no usage") else AccountStatus.Ok
                 AccountExtended(
                     account = account,
                     status = status
@@ -36,11 +37,24 @@ class HomeScreenModel(
             _state.value = State.Ready(
                 HomeSummary(
                     accounts = accountExtended,
-                    numOfAccountsWithIssue = numOfAccountsWithIssue
+                    generalStatus = getGeneralStatus(numOfAccountsWithIssue)
                 )
             )
         }
     }
+
+    private fun getGeneralStatus(numOfAccountsWithIssue: Int) =
+        if (numOfAccountsWithIssue == 0) {
+            AccountStatus.Ok
+        } else {
+            AccountStatus.Issue(
+                message = if (numOfAccountsWithIssue == 0) {
+                    "EVERYTHING IS FINE"
+                } else {
+                    "$numOfAccountsWithIssue ACCOUNTS NEED ATTENTION"
+                }
+            )
+        }
 }
 
 sealed class AccountStatus {
@@ -55,5 +69,5 @@ data class AccountExtended(
 
 data class HomeSummary(
     val accounts: List<AccountExtended>,
-    val numOfAccountsWithIssue: Int
+    val generalStatus: AccountStatus
 )

@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import data.model.Account
 import data.model.Tx
 import ui.screen.observeState
-import ui.util.issueBasedColor
 import ui.util.lerp
 import ui.util.print
 import ui.util.printAmount
@@ -58,7 +57,7 @@ private fun ReadyViewState(
     summary: HomeSummary,
     onAddTxClicked: (String) -> Unit
 ) = Column {
-    Status(summary.numOfAccountsWithIssue)
+    GeneralStatus(summary.generalStatus)
     DefaultSpacer(16.dp)
 
     AccountsList(
@@ -70,25 +69,22 @@ private fun ReadyViewState(
 }
 
 @Composable
-private fun Status(numOfAccountsWithIssue: Int) {
-    val generalStatus = if (numOfAccountsWithIssue == 0) {
-        "EVERYTHING IS FINE"
-    } else {
-        "$numOfAccountsWithIssue ACCOUNTS NEED ATTENTION"
-    }
-    Surface(elevation = 10.dp) {
+private fun GeneralStatus(status: AccountStatus) = when (status) {
+    is AccountStatus.Issue -> Surface(elevation = 10.dp) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = numOfAccountsWithIssue.issueBasedColor)
+                .background(color = status.issueBasedColor)
                 .padding(16.dp),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
-            text = generalStatus,
+            text = status.message,
             color = Color.White
         )
     }
+
+    AccountStatus.Ok -> {}
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -117,7 +113,8 @@ private fun AccountsList(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     color = Color.Red,
-                    text = status.message
+                    text = status.message,
+                    fontWeight = FontWeight.SemiBold
                 )
 
                 AccountStatus.Ok -> {}
@@ -255,3 +252,9 @@ private fun TxItem(tx: Tx) {
         }
     }
 }
+
+val AccountStatus.issueBasedColor: Color
+    get() = when (this) {
+        AccountStatus.Ok -> Color.Green
+        is AccountStatus.Issue -> Color.Red
+    }

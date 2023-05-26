@@ -1,5 +1,6 @@
 package ui.screen.home
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -7,7 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -87,7 +88,8 @@ fun AccountsList(
                 Layout(
                     content = {
                         AccountItem(
-                            modifier = Modifier.fillMaxWidth().fillMaxHeight()
+                            modifier = Modifier.fillMaxSize()
+                                .animateContentSize()
                                 .background(
                                     color = Color.Gray,
                                     shape = RoundedCornerShape(5.dp)
@@ -97,14 +99,38 @@ fun AccountsList(
                         )
                     },
                     measurePolicy = { measurables, constraints ->
+                        val visibleItemIndexes =
+                            lazyListState.layoutInfo.visibleItemsInfo.map { it.index }
+                        println(visibleItemIndexes)
                         val maxPossibleItemWidthPx = maxWidth.roundToPx()
+                        val maxPossibleItemHeightPx = maxHeight.roundToPx()
+                        println("maxPossibleItemHeightPx: $maxPossibleItemHeightPx")
+                        val itemHeightNonActive = (maxPossibleItemHeightPx * 0.8).toInt()
+                        println("itemHeightNonActive: $itemHeightNonActive")
                         val itemWidth = (maxPossibleItemWidthPx * 0.8).toInt()
+                        val itemHeight =
+                            if (visibleItemIndexes.size == 2) {
+                                if (index == 0 || index == accounts.lastIndex) {
+                                    maxPossibleItemHeightPx
+                                } else {
+                                    itemHeightNonActive
+                                }
+                            } else if (visibleItemIndexes.size == 3) {
+                                if (visibleItemIndexes[1] == index) {
+                                    maxPossibleItemHeightPx
+                                } else {
+                                    itemHeightNonActive
+                                }
+                            } else {
+                                0
+                            }
                         val newConstrains = constraints.copy(
                             minWidth = itemWidth,
-                            maxWidth = itemWidth
+                            maxWidth = itemWidth,
+                            minHeight = itemHeight,
+                            maxHeight = itemHeight,
                         )
                         val itemLayout = measurables.first().measure(newConstrains)
-                        val itemHeight = itemLayout.height
 
                         val startSpace =
                             if (index == 0) (maxPossibleItemWidthPx - itemWidth) / 2 else 0

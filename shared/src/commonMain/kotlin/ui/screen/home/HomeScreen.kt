@@ -1,28 +1,25 @@
 package ui.screen.home
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -30,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import data.model.Account
 import data.model.Tx
 import ui.screen.observeState
+import ui.util.lerp
 import ui.util.print
 import ui.util.printAmount
 import ui.util.zeroBasedColor
@@ -77,74 +75,48 @@ fun AccountsList(
     accounts: List<Account>,
     onAddTxClicked: (String) -> Unit
 ) {
-    val lazyListState = rememberLazyListState()
-    BoxWithConstraints(modifier = modifier) {
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            state = lazyListState,
-            flingBehavior = rememberSnapFlingBehavior(lazyListState)
-        ) {
-            itemsIndexed(accounts) { index, account ->
-                Layout(
-                    content = {
-                        AccountItem(
-                            modifier = Modifier.fillMaxSize()
-                                .animateContentSize()
-                                .background(
-                                    color = Color.Gray,
-                                    shape = RoundedCornerShape(5.dp)
-                                ),
-                            account = account,
-                            onAddTxClicked = { onAddTxClicked(account.id) }
-                        )
-                    },
-                    measurePolicy = { measurables, constraints ->
-                        val visibleItemIndexes =
-                            lazyListState.layoutInfo.visibleItemsInfo.map { it.index }
-                        println(visibleItemIndexes)
-                        val maxPossibleItemWidthPx = maxWidth.roundToPx()
-                        val maxPossibleItemHeightPx = maxHeight.roundToPx()
-                        println("maxPossibleItemHeightPx: $maxPossibleItemHeightPx")
-                        val itemHeightNonActive = (maxPossibleItemHeightPx * 0.8).toInt()
-                        println("itemHeightNonActive: $itemHeightNonActive")
-                        val itemWidth = (maxPossibleItemWidthPx * 0.8).toInt()
-                        val itemHeight =
-                            if (visibleItemIndexes.size == 2) {
-                                if (index == 0 || index == accounts.lastIndex) {
-                                    maxPossibleItemHeightPx
-                                } else {
-                                    itemHeightNonActive
-                                }
-                            } else if (visibleItemIndexes.size == 3) {
-                                if (visibleItemIndexes[1] == index) {
-                                    maxPossibleItemHeightPx
-                                } else {
-                                    itemHeightNonActive
-                                }
-                            } else {
-                                0
-                            }
-                        val newConstrains = constraints.copy(
-                            minWidth = itemWidth,
-                            maxWidth = itemWidth,
-                            minHeight = itemHeight,
-                            maxHeight = itemHeight,
-                        )
-                        val itemLayout = measurables.first().measure(newConstrains)
+    val pagerState = rememberPagerState(initialPage = 0)
 
-                        val startSpace =
-                            if (index == 0) (maxPossibleItemWidthPx - itemWidth) / 2 else 0
-                        val endSpace =
-                            if (index == accounts.lastIndex) (maxPossibleItemWidthPx - itemWidth) / 2 else 0
-                        val finalItemWidth = startSpace + itemWidth + endSpace
+    HorizontalPager(
+        modifier = modifier,
+        pageCount = accounts.size, state = pagerState,
+        pageSpacing = 5.dp,
+        contentPadding = PaddingValues(horizontal = 30.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) { index ->
+        Card(
+            shape = RoundedCornerShape(10.dp),
+            elevation = 10.dp,
+            modifier = Modifier
+                .graphicsLayer {
+                    val pageOffset =
+                        (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
 
-                        layout(finalItemWidth, itemHeight) {
-                            val x = if (index == 0) startSpace else 0
-                            itemLayout.place(x, 0)
-                        }
+                    lerp(
+                        start = 0.95f,
+                        stop = 1f,
+                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                    ).also { scale ->
+                        scaleX = scale
+                        scaleY = scale
                     }
-                )
-            }
+                    alpha = lerp(
+                        start = 0.5f,
+                        stop = 1f,
+                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                    )
+                }
+        ) {
+            val account = accounts[index]
+            AccountItem(
+                modifier = Modifier.fillMaxSize()
+                    .background(
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(5.dp)
+                    ),
+                account = account,
+                onAddTxClicked = { onAddTxClicked(account.id) }
+            )
         }
     }
 }

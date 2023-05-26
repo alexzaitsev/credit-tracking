@@ -14,8 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import data.model.Account
 import data.model.Tx
+import ui.screen.observeState
 import ui.util.print
 import ui.util.printAmount
 import ui.util.zeroBasedColor
@@ -37,11 +36,10 @@ fun HomeScreen(
     sm: HomeScreenModel,
     onAddTxClicked: (String) -> Unit
 ) {
-    val state by sm.state.collectAsState()
-    when (state) {
+    when (val state = sm.observeState()) {
         HomeScreenModel.State.Loading -> DefaultProgress()
-        is HomeScreenModel.State.Result -> ReadyViewState(
-            accounts = (state as HomeScreenModel.State.Result).accounts,
+        is HomeScreenModel.State.Ready -> ReadyViewState(
+            accounts = state.accounts,
             onAddTxClicked = onAddTxClicked
         )
     }

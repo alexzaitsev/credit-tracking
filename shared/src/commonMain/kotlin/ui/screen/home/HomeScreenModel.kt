@@ -1,28 +1,29 @@
 package ui.screen.home
 
-import cafe.adriel.voyager.core.model.StateScreenModel
-import cafe.adriel.voyager.core.model.coroutineScope
 import data.DataRepository
 import data.model.Account
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import ui.screen.BaseScreenModel
 
 class HomeScreenModel(
     private val dataRepository: DataRepository
-) : StateScreenModel<HomeScreenModel.State>(State.Loading) {
+) : BaseScreenModel<HomeScreenModel.State, HomeScreenModel.SideEffect>(State.Loading) {
 
     sealed class State {
         object Loading : State()
-        data class Result(val accounts: List<Account>) : State()
+        data class Ready(val accounts: List<Account>) : State()
+    }
+
+    sealed class SideEffect {
     }
 
     init {
         observeData()
     }
 
-    private fun observeData() = coroutineScope.launch {
+    private fun observeData() = launch {
         dataRepository.observeAccounts().collectLatest { accounts: List<Account> ->
-            mutableState.value = State.Result(accounts)
+            _state.value = State.Ready(accounts)
         }
     }
 }

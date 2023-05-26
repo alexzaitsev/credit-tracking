@@ -15,6 +15,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -57,18 +58,7 @@ private fun ReadyViewState(
     summary: HomeSummary,
     onAddTxClicked: (String) -> Unit
 ) = Column {
-
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = summary.numOfAccountsWithIssue.issueBasedColor)
-            .padding(16.dp),
-        textAlign = TextAlign.Center,
-        fontWeight = FontWeight.Bold,
-        text = "NUMBER OF ISSUES ${summary.numOfAccountsWithIssue}",
-        color = Color.White
-    )
-
+    Status(summary.numOfAccountsWithIssue)
     DefaultSpacer(16.dp)
 
     AccountsList(
@@ -76,13 +66,34 @@ private fun ReadyViewState(
         accounts = summary.accounts,
         onAddTxClicked = onAddTxClicked
     )
-
     DefaultSpacer(16.dp)
+}
+
+@Composable
+private fun Status(numOfAccountsWithIssue: Int) {
+    val generalStatus = if (numOfAccountsWithIssue == 0) {
+        "EVERYTHING IS FINE"
+    } else {
+        "$numOfAccountsWithIssue ACCOUNTS NEED ATTENTION"
+    }
+    Surface(elevation = 10.dp) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = numOfAccountsWithIssue.issueBasedColor)
+                .padding(16.dp),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            text = generalStatus,
+            color = Color.White
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AccountsList(
+private fun AccountsList(
     modifier: Modifier,
     accounts: List<AccountExtended>,
     onAddTxClicked: (String) -> Unit
@@ -208,15 +219,6 @@ private fun Balance(balance: Double) = Text(
     fontSize = 20.sp,
     color = balance.zeroBasedColor,
     text = balance.printAmount()
-)
-
-@Composable
-private fun Status(accountStatus: String) = Text(
-    modifier = Modifier.fillMaxWidth()
-        .background(color = Color.Green, shape = RoundedCornerShape(5.dp))
-        .padding(8.dp),
-    textAlign = TextAlign.Center,
-    text = accountStatus
 )
 
 @Composable

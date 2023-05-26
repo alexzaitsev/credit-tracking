@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import data.model.Account
 import data.model.Tx
 import ui.screen.observeState
+import ui.util.issueBasedColor
 import ui.util.lerp
 import ui.util.print
 import ui.util.printAmount
@@ -44,7 +46,7 @@ fun HomeScreen(
     when (val state = sm.observeState()) {
         HomeScreenModel.State.Loading -> DefaultProgress()
         is HomeScreenModel.State.Ready -> ReadyViewState(
-            accounts = state.accounts,
+            summary = state.summary,
             onAddTxClicked = onAddTxClicked
         )
     }
@@ -52,21 +54,22 @@ fun HomeScreen(
 
 @Composable
 private fun ReadyViewState(
-    accounts: List<Account>,
+    summary: HomeSummary,
     onAddTxClicked: (String) -> Unit
 ) = Column(modifier = Modifier.padding(vertical = 16.dp)) {
 
     // TODO general statuses here
     Text(
-        modifier = Modifier.weight(0.3f).padding(horizontal = 16.dp),
-        text = "status here"
+        modifier = Modifier.padding(horizontal = 16.dp),
+        text = "NUMBER OF ISSUES ${summary.numOfAccountsWithIssue}",
+        color = summary.numOfAccountsWithIssue.issueBasedColor
     )
 
     DefaultSpacer(16.dp)
 
     AccountsList(
-        modifier = Modifier.weight(0.7f),
-        accounts = accounts,
+        modifier = Modifier.weight(1f),
+        accounts = summary.accounts,
         onAddTxClicked = onAddTxClicked
     )
 }
@@ -75,7 +78,7 @@ private fun ReadyViewState(
 @Composable
 fun AccountsList(
     modifier: Modifier,
-    accounts: List<Account>,
+    accounts: List<AccountExtended>,
     onAddTxClicked: (String) -> Unit
 ) {
     val pagerState = rememberPagerState(initialPage = 0)
@@ -87,38 +90,57 @@ fun AccountsList(
         contentPadding = PaddingValues(horizontal = 40.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) { index ->
-        Card(
-            shape = RoundedCornerShape(10.dp),
-            elevation = 10.dp,
-            modifier = Modifier
-                .graphicsLayer {
-                    // |    0page 1p| = 0 for 0page, -1 for 1page
-                    // |age 1page 2p| = 1 for 0page, 0 for 1page, -1 for 2page
-                    val pageOffset =
-                        abs((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction)
+        val (account, status) = accounts[index]
 
-                    val scale = lerp(
-                        start = 0.85f,
-                        stop = 1f,
-                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                    )
-                    scaleX = scale
-                    scaleY = scale
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            when (status) {
+                is AccountStatus.Issue -> Text(
+                    color = Color.Red,
+                    text = status.message
+                )
 
-                    alpha = lerp(
-                        start = 0.5f,
-                        stop = 1f,
-                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                    )
-                }
-        ) {
-            val account = accounts[index]
-            AccountItem(
-                modifier = Modifier.fillMaxSize()
-                    .background(color = Color.Gray),
-                account = account,
-                onAddTxClicked = { onAddTxClicked(account.id) }
-            )
+                AccountStatus.Ok -> {}
+            }
+            val bg = when(status) {
+                is AccountStatus.Issue -> Color.Red.copy(alpha = 0.6f)
+                AccountStatus.Ok -> Color.LightGray
+            }
+
+            Spacer(modifier = Modifier.weight(0.2f))
+
+            Card(
+                shape = RoundedCornerShape(10.dp),
+                elevation = 10.dp,
+                modifier = Modifier
+                    .weight(0.8f)
+                    .graphicsLayer {
+                        // |    0page 1p| = 0 for 0page, -1 for 1page
+                        // |age 1page 2p| = 1 for 0page, 0 for 1page, -1 for 2page
+                        val pageOffset =
+                            abs((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction)
+
+                        val scale = lerp(
+                            start = 0.85f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                        scaleX = scale
+                        scaleY = scale
+
+                        alpha = lerp(
+                            start = 0.5f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                    }
+            ) {
+                AccountItem(
+                    modifier = Modifier.fillMaxSize()
+                        .background(color = bg),
+                    account = account,
+                    onAddTxClicked = { onAddTxClicked(account.id) }
+                )
+            }
         }
     }
 }

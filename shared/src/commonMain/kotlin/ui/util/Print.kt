@@ -15,6 +15,9 @@ private fun Int.applyZero() = if (this < 10) "0$this" else "$this"
 val Double.zeroBasedColor: Color
     get() = if (this < 0) Color.Red else Color.Green
 
+val Int.issueBasedColor: Color
+    get() = if (this > 0) Color.Red else Color.Green
+
 fun Double.printAmount() = if (this < 0) {
     "-$${abs(this).round()}"
 } else {

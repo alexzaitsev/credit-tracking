@@ -115,7 +115,29 @@ private fun AccountsList(
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.weight(0.1f))
-            AccountStatus(status)
+            AccountStatus(
+                modifier = Modifier.graphicsLayer {
+                    // |    0page 1p| = 0 for 0page, -1 for 1page
+                    // |age 1page 2p| = 1 for 0page, 0 for 1page, -1 for 2page
+                    val pageOffset =
+                        abs((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction)
+
+                    val scale = lerp(
+                        start = 0.3f,
+                        stop = 1f,
+                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                    )
+                    scaleX = scale
+                    scaleY = scale
+
+                    alpha = lerp(
+                        start = 0.1f,
+                        stop = 1f,
+                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                    )
+                },
+                status = status
+            )
             Spacer(modifier = Modifier.weight(0.1f))
 
             val bg = when (status) {
@@ -161,9 +183,9 @@ private fun AccountsList(
 }
 
 @Composable
-private fun AccountStatus(status: AccountStatus) = when (status) {
+private fun AccountStatus(modifier: Modifier, status: AccountStatus) = when (status) {
     is AccountStatus.Issue -> Text(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().then(modifier),
         textAlign = TextAlign.Center,
         color = Color.Red,
         text = status.message,

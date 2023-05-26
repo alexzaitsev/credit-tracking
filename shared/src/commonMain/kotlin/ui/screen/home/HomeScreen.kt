@@ -1,16 +1,19 @@
 package ui.screen.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +48,7 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ReadyViewState(
     accounts: List<Account>,
@@ -52,14 +56,21 @@ private fun ReadyViewState(
 ) = Column(modifier = Modifier.padding(16.dp)) {
 
     // TODO general statuses here
-    Text("status here")
+    Text(
+        modifier = Modifier.weight(0.3f),
+        text = "status here"
+    )
 
+    val lazyListState = rememberLazyListState()
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = Modifier.weight(0.7f),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        state = lazyListState,
+        flingBehavior = rememberSnapFlingBehavior(lazyListState)
     ) {
         items(accounts) { account ->
             AccountItem(
-                modifier = Modifier.width(300.dp).wrapContentHeight()
+                modifier = Modifier.width(300.dp).fillMaxHeight()
                     .background(
                         color = Color.Gray,
                         shape = RoundedCornerShape(5.dp)
@@ -86,7 +97,10 @@ private fun AccountItem(
     Balance(balance = account.balance)
     DefaultSpacer(4.dp)
 
-    Transactions(txs = account.lastTxs)
+    Transactions(
+        modifier = Modifier.weight(1f),
+        txs = account.lastTxs
+    )
 
     DefaultButton(
         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -133,8 +147,8 @@ private fun Status(accountStatus: String) = Text(
 )
 
 @Composable
-private fun Transactions(txs: List<Tx>) {
-    LazyColumn {
+private fun Transactions(modifier: Modifier, txs: List<Tx>) {
+    LazyColumn(modifier = modifier) {
         items(txs) { tx ->
             TxItem(tx = tx)
         }

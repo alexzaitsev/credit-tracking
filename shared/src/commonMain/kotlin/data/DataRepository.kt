@@ -1,8 +1,8 @@
 package data
 
-import data.cloud.CloudDataSource
-import data.cloud.model.toCloud
-import data.cloud.model.toData
+import data.source.cloud.CloudDataSource
+import data.source.cloud.model.toCloud
+import data.source.cloud.model.toData
 import data.model.Account
 import data.model.Tx
 import kotlinx.coroutines.flow.Flow

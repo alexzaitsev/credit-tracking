@@ -1,4 +1,4 @@
-package ui.view
+package ui.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf

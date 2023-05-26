@@ -1,6 +1,6 @@
-package data.cloud.model
+package data.source.cloud.model
 
-import data.cloud.REALM_COLLECTION_ACCOUNT
+import data.source.cloud.REALM_COLLECTION_ACCOUNT
 import data.model.Account
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PersistedName

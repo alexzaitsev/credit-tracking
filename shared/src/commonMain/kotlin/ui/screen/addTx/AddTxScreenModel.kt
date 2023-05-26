@@ -2,7 +2,7 @@ package ui.screen.addTx
 
 import cafe.adriel.voyager.core.model.coroutineScope
 import data.DataRepository
-import data.cloud.now
+import data.source.cloud.now
 import data.model.Tx
 import kotlinx.coroutines.launch
 import ui.screen.BaseScreenModel

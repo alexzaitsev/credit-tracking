@@ -18,7 +18,7 @@ import ui.view.default.DefaultProgress
 import ui.view.default.DefaultSpacer
 import ui.view.default.DefaultTextField
 import ui.view.default.DefaultTopBar
-import ui.view.rememberMutable
+import ui.util.rememberMutable
 
 @Composable
 fun AddTxScreen(sm: AddTxScreenModel, onBackClicked: () -> Unit, onAdded: () -> Unit) {

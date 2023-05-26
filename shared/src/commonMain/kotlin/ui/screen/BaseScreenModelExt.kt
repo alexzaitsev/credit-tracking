@@ -3,7 +3,7 @@ package ui.screen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import common.util.OneTime
+import ui.util.OneTime
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable

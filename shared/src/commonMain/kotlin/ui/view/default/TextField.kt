@@ -5,7 +5,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import ui.view.rememberMutable
+import ui.util.rememberMutable
 
 @Composable
 fun DefaultTextField(

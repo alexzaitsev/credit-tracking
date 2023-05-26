@@ -1,7 +1,7 @@
-package data.cloud.model
+package data.source.cloud.model
 
-import data.cloud.REALM_COLLECTION_TX
-import data.cloud.TIME_ZONE
+import data.source.cloud.REALM_COLLECTION_TX
+import data.source.cloud.TIME_ZONE
 import data.model.Tx
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject

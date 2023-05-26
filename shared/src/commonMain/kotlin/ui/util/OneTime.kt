@@ -1,11 +1,10 @@
-package common.util
+package ui.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CoroutineScope
-import ui.view.rememberMutable
 
 @Composable
 fun OneTime(block: suspend CoroutineScope.() -> Unit) = LaunchedEffect(Unit, block)

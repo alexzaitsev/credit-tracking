@@ -1,8 +1,8 @@
 package data
 
 import REALM_APP_ID
-import data.cloud.CloudDataSource
-import data.cloud.CloudRealm
+import data.source.cloud.CloudDataSource
+import data.source.cloud.CloudRealm
 import io.realm.kotlin.log.LogLevel
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.AppConfiguration

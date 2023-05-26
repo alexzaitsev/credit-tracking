@@ -54,13 +54,15 @@ fun HomeScreen(
 private fun ReadyViewState(
     accounts: List<Account>,
     onAddTxClicked: (String) -> Unit
-) = Column(modifier = Modifier.padding(16.dp)) {
+) = Column(modifier = Modifier.padding(vertical = 16.dp)) {
 
     // TODO general statuses here
     Text(
-        modifier = Modifier.weight(0.3f),
+        modifier = Modifier.weight(0.3f).padding(horizontal = 16.dp),
         text = "status here"
     )
+
+    DefaultSpacer(16.dp)
 
     AccountsList(
         modifier = Modifier.weight(0.7f),
@@ -81,8 +83,8 @@ fun AccountsList(
     HorizontalPager(
         modifier = modifier,
         pageCount = accounts.size, state = pagerState,
-        pageSpacing = 5.dp,
-        contentPadding = PaddingValues(horizontal = 30.dp),
+        pageSpacing = (-15).dp,
+        contentPadding = PaddingValues(horizontal = 40.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) { index ->
         Card(
@@ -96,7 +98,7 @@ fun AccountsList(
                         abs((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction)
 
                     val scale = lerp(
-                        start = 0.95f,
+                        start = 0.85f,
                         stop = 1f,
                         fraction = 1f - pageOffset.coerceIn(0f, 1f)
                     )

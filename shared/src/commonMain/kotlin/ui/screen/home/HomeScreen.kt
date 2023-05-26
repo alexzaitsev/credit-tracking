@@ -34,6 +34,7 @@ import ui.util.zeroBasedColor
 import ui.view.default.DefaultButton
 import ui.view.default.DefaultProgress
 import ui.view.default.DefaultSpacer
+import kotlin.math.abs
 
 @Composable
 fun HomeScreen(
@@ -89,17 +90,19 @@ fun AccountsList(
             elevation = 10.dp,
             modifier = Modifier
                 .graphicsLayer {
+                    // |    0page 1p| = 0 for 0page, -1 for 1page
+                    // |age 1page 2p| = 1 for 0page, 0 for 1page, -1 for 2page
                     val pageOffset =
-                        (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
+                        abs((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction)
 
-                    lerp(
+                    val scale = lerp(
                         start = 0.95f,
                         stop = 1f,
                         fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                    ).also { scale ->
-                        scaleX = scale
-                        scaleY = scale
-                    }
+                    )
+                    scaleX = scale
+                    scaleY = scale
+
                     alpha = lerp(
                         start = 0.5f,
                         stop = 1f,
@@ -110,10 +113,7 @@ fun AccountsList(
             val account = accounts[index]
             AccountItem(
                 modifier = Modifier.fillMaxSize()
-                    .background(
-                        color = Color.Gray,
-                        shape = RoundedCornerShape(5.dp)
-                    ),
+                    .background(color = Color.Gray),
                 account = account,
                 onAddTxClicked = { onAddTxClicked(account.id) }
             )

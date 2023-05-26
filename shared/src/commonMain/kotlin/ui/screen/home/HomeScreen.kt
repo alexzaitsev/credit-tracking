@@ -4,15 +4,16 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -48,7 +50,6 @@ fun HomeScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ReadyViewState(
     accounts: List<Account>,
@@ -61,23 +62,63 @@ private fun ReadyViewState(
         text = "status here"
     )
 
-    val lazyListState = rememberLazyListState()
-    LazyRow(
+    AccountsList(
         modifier = Modifier.weight(0.7f),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        state = lazyListState,
-        flingBehavior = rememberSnapFlingBehavior(lazyListState)
-    ) {
-        items(accounts) { account ->
-            AccountItem(
-                modifier = Modifier.width(300.dp).fillMaxHeight()
-                    .background(
-                        color = Color.Gray,
-                        shape = RoundedCornerShape(5.dp)
-                    ),
-                account = account,
-                onAddTxClicked = { onAddTxClicked(account.id) }
-            )
+        accounts = accounts,
+        onAddTxClicked = onAddTxClicked
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun AccountsList(
+    modifier: Modifier,
+    accounts: List<Account>,
+    onAddTxClicked: (String) -> Unit
+) {
+    val lazyListState = rememberLazyListState()
+    BoxWithConstraints(modifier = modifier) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            state = lazyListState,
+            flingBehavior = rememberSnapFlingBehavior(lazyListState)
+        ) {
+            itemsIndexed(accounts) { index, account ->
+                Layout(
+                    content = {
+                        AccountItem(
+                            modifier = Modifier.fillMaxWidth().fillMaxHeight()
+                                .background(
+                                    color = Color.Gray,
+                                    shape = RoundedCornerShape(5.dp)
+                                ),
+                            account = account,
+                            onAddTxClicked = { onAddTxClicked(account.id) }
+                        )
+                    },
+                    measurePolicy = { measurables, constraints ->
+                        val maxPossibleItemWidthPx = maxWidth.roundToPx()
+                        val itemWidth = (maxPossibleItemWidthPx * 0.8).toInt()
+                        val newConstrains = constraints.copy(
+                            minWidth = itemWidth,
+                            maxWidth = itemWidth
+                        )
+                        val itemLayout = measurables.first().measure(newConstrains)
+                        val itemHeight = itemLayout.height
+
+                        val startSpace =
+                            if (index == 0) (maxPossibleItemWidthPx - itemWidth) / 2 else 0
+                        val endSpace =
+                            if (index == accounts.lastIndex) (maxPossibleItemWidthPx - itemWidth) / 2 else 0
+                        val finalItemWidth = startSpace + itemWidth + endSpace
+
+                        layout(finalItemWidth, itemHeight) {
+                            val x = if (index == 0) startSpace else 0
+                            itemLayout.place(x, 0)
+                        }
+                    }
+                )
+            }
         }
     }
 }

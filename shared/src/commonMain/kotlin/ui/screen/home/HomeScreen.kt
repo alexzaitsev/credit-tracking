@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -116,26 +117,12 @@ private fun AccountsList(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.weight(0.1f))
             AccountStatus(
-                modifier = Modifier.graphicsLayer {
-                    // |    0page 1p| = 0 for 0page, -1 for 1page
-                    // |age 1page 2p| = 1 for 0page, 0 for 1page, -1 for 2page
-                    val pageOffset =
-                        abs((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction)
-
-                    val scale = lerp(
-                        start = 0.3f,
-                        stop = 1f,
-                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                    )
-                    scaleX = scale
-                    scaleY = scale
-
-                    alpha = lerp(
-                        start = 0.1f,
-                        stop = 1f,
-                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                    )
-                },
+                modifier = getGraphicsModifier(
+                    pagerState = pagerState,
+                    index = index,
+                    startScale = 0.3f,
+                    startAlpha = 0.1f
+                ),
                 status = status
             )
             Spacer(modifier = Modifier.weight(0.1f))
@@ -149,26 +136,14 @@ private fun AccountsList(
                 elevation = 10.dp,
                 modifier = Modifier
                     .weight(0.8f)
-                    .graphicsLayer {
-                        // |    0page 1p| = 0 for 0page, -1 for 1page
-                        // |age 1page 2p| = 1 for 0page, 0 for 1page, -1 for 2page
-                        val pageOffset =
-                            abs((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction)
-
-                        val scale = lerp(
-                            start = 0.85f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        )
-                        scaleX = scale
-                        scaleY = scale
-
-                        alpha = lerp(
-                            start = 0.5f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        )
-                    }
+                    .then(
+                        getGraphicsModifier(
+                            pagerState = pagerState,
+                            index = index,
+                            startScale = 0.85f,
+                            startAlpha = 0.5f
+                        ),
+                    )
             ) {
                 AccountItem(
                     modifier = Modifier.fillMaxSize()
@@ -189,7 +164,8 @@ private fun AccountStatus(modifier: Modifier, status: AccountStatus) = when (sta
         textAlign = TextAlign.Center,
         color = Color.Red,
         text = status.message,
-        fontWeight = FontWeight.SemiBold
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp
     )
 
     AccountStatus.Ok -> {}
@@ -286,3 +262,27 @@ private fun TxItem(tx: Tx) {
         }
     }
 }
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun getGraphicsModifier(pagerState: PagerState, index: Int, startScale: Float, startAlpha: Float) =
+    Modifier.graphicsLayer {
+        // |    0page 1p| = 0 for 0page, -1 for 1page
+        // |age 1page 2p| = 1 for 0page, 0 for 1page, -1 for 2page
+        val pageOffset =
+            abs((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction)
+
+        val scale = lerp(
+            start = startScale,
+            stop = 1f,
+            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+        )
+        scaleX = scale
+        scaleY = scale
+
+        alpha = lerp(
+            start = startAlpha,
+            stop = 1f,
+            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+        )
+    }

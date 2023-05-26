@@ -69,22 +69,29 @@ private fun ReadyViewState(
 }
 
 @Composable
-private fun GeneralStatus(status: AccountStatus) = when (status) {
-    is AccountStatus.Issue -> Surface(elevation = 10.dp) {
+private fun GeneralStatus(status: AccountStatus) {
+    val color = when (status) {
+        AccountStatus.Ok -> Color.Green
+        is AccountStatus.Issue -> Color.Red
+    }
+    val text = when (status) {
+        is AccountStatus.Issue -> status.message
+        AccountStatus.Ok -> "EVERYTHING IS FINE"
+    }
+
+    Surface(elevation = 10.dp) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = status.issueBasedColor)
+                .background(color = color)
                 .padding(16.dp),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
-            text = status.message,
+            text = text,
             color = Color.White
         )
     }
-
-    AccountStatus.Ok -> {}
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -107,19 +114,7 @@ private fun AccountsList(
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.weight(0.1f))
-
-            when (status) {
-                is AccountStatus.Issue -> Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    color = Color.Red,
-                    text = status.message,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                AccountStatus.Ok -> {}
-            }
-
+            AccountStatus(status)
             Spacer(modifier = Modifier.weight(0.1f))
 
             val bg = when (status) {
@@ -154,13 +149,27 @@ private fun AccountsList(
             ) {
                 AccountItem(
                     modifier = Modifier.fillMaxSize()
-                        .background(color = bg),
+                        .background(color = bg)
+                        .padding(16.dp),
                     account = account,
                     onAddTxClicked = { onAddTxClicked(account.id) }
                 )
             }
         }
     }
+}
+
+@Composable
+private fun AccountStatus(status: AccountStatus) = when (status) {
+    is AccountStatus.Issue -> Text(
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        color = Color.Red,
+        text = status.message,
+        fontWeight = FontWeight.SemiBold
+    )
+
+    AccountStatus.Ok -> {}
 }
 
 @Composable
@@ -252,9 +261,3 @@ private fun TxItem(tx: Tx) {
         }
     }
 }
-
-val AccountStatus.issueBasedColor: Color
-    get() = when (this) {
-        AccountStatus.Ok -> Color.Green
-        is AccountStatus.Issue -> Color.Red
-    }

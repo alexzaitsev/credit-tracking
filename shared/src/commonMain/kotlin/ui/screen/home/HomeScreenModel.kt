@@ -47,13 +47,7 @@ class HomeScreenModel(
         if (numOfAccountsWithIssue == 0) {
             AccountStatus.Ok
         } else {
-            AccountStatus.Issue(
-                message = if (numOfAccountsWithIssue == 0) {
-                    "EVERYTHING IS FINE"
-                } else {
-                    "$numOfAccountsWithIssue ACCOUNTS NEED ATTENTION"
-                }
-            )
+            AccountStatus.Issue(message = "$numOfAccountsWithIssue ACCOUNTS NEED ATTENTION")
         }
 }
 

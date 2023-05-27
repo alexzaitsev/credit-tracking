@@ -2,6 +2,7 @@ package ui.util
 
 import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDateTime
+import ui.view.theme.Colors
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -13,7 +14,7 @@ fun LocalDateTime.print(twoLines: Boolean = false) =
 private fun Int.applyZero() = if (this < 10) "0$this" else "$this"
 
 val Double.zeroBasedColor: Color
-    get() = if (this < 0) Color.Red else Color.Green
+    get() = if (this < 0) Colors.PINK_200 else Colors.AMBER_200
 
 fun Double.printAmount() = if (this < 0) {
     "-$${abs(this).round()}"

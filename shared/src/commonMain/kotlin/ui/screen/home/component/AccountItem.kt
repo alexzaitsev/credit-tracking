@@ -1,15 +1,19 @@
 package ui.screen.home.component
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -22,7 +26,7 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,26 +36,78 @@ import androidx.compose.ui.unit.sp
 import data.model.Account
 import data.model.Tx
 import ui.screen.home.AccountStatus
+import ui.util.lerp
 import ui.util.print
 import ui.util.printAmount
 import ui.util.zeroBasedColor
 import ui.view.default.DefaultSpacer
+import ui.view.theme.Colors
+import kotlin.math.abs
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun AccountPage(
+    account: Account,
+    status: AccountStatus,
+    index: Int,
+    pagerState: PagerState,
+    onAddTxClicked: (String) -> Unit
+) = Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Spacer(modifier = Modifier.weight(0.1f))
+    AccountStatus(
+        modifier = getGraphicsModifier(
+            pagerState = pagerState,
+            index = index,
+            startScale = 0.3f,
+            startAlpha = 0.1f
+        ),
+        status = status
+    )
+    Spacer(modifier = Modifier.weight(0.1f))
+
+    val bg = when (status) {
+        is AccountStatus.Issue -> Colors.AMBER_300
+        AccountStatus.Ok -> Colors.DEEP_PURPLE_300
+    }
+    Card(
+        shape = RoundedCornerShape(10.dp),
+        elevation = 10.dp,
+        modifier = Modifier
+            .weight(0.8f)
+            .then(
+                getGraphicsModifier(
+                    pagerState = pagerState,
+                    index = index,
+                    startScale = 0.85f,
+                    startAlpha = 0.5f
+                ),
+            )
+    ) {
+        AccountItem(
+            modifier = Modifier.fillMaxSize()
+                .background(color = bg)
+                .padding(16.dp),
+            account = account,
+            onAddTxClicked = { onAddTxClicked(account.id) }
+        )
+    }
+}
 
 @Composable
 fun AccountStatus(modifier: Modifier, status: AccountStatus) = when (status) {
     is AccountStatus.Issue -> Text(
         modifier = Modifier.fillMaxWidth().then(modifier),
         textAlign = TextAlign.Center,
-        color = Color.Red,
+        color = Colors.PINK_600,
         text = status.message,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp
+        fontSize = 24.sp
     )
 
     AccountStatus.Ok -> Icon(
-        modifier = Modifier.size(100.dp).then(modifier),
+        modifier = Modifier.width(100.dp).then(modifier),
         painter = rememberVectorPainter(Icons.Filled.Done),
-        tint = Color.Green,
+        tint = Colors.GREEN_600,
         contentDescription = null
     )
 }
@@ -124,7 +180,7 @@ private fun Transactions(
             item {
                 Text(
                     modifier = Modifier.padding(8.dp),
-                    color = Color.Gray,
+                    color = Colors.AMBER_200,
                     fontSize = 12.sp,
                     fontStyle = FontStyle.Italic,
                     text = "*Last 5 transactions"
@@ -144,7 +200,7 @@ private fun Transactions(
 @Composable
 private fun TxItem(tx: Tx) {
     Card(
-        backgroundColor = Color.LightGray,
+        backgroundColor = Colors.BLUE_300,
         shape = RoundedCornerShape(10.dp),
         elevation = 2.dp
     ) {
@@ -156,6 +212,7 @@ private fun TxItem(tx: Tx) {
         ) {
             Text(
                 modifier = Modifier.padding(end = 8.dp),
+                color = Colors.WHITE,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 text = tx.dateTime.print(twoLines = true)
@@ -164,7 +221,7 @@ private fun TxItem(tx: Tx) {
                 Text(
                     modifier = Modifier.weight(1f).padding(end = 8.dp),
                     fontSize = 12.sp,
-                    color = Color(0xff3d3d3d),
+                    color = Colors.GRAY_200,
                     text = tx.comment
                 )
             } else {
@@ -178,3 +235,27 @@ private fun TxItem(tx: Tx) {
         }
     }
 }
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun getGraphicsModifier(pagerState: PagerState, index: Int, startScale: Float, startAlpha: Float) =
+    Modifier.graphicsLayer {
+        // |    0page 1p| = 0 for 0page, -1 for 1page
+        // |age 1page 2p| = 1 for 0page, 0 for 1page, -1 for 2page
+        val pageOffset =
+            abs((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction)
+
+        val scale = lerp(
+            start = startScale,
+            stop = 1f,
+            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+        )
+        scaleX = scale
+        scaleY = scale
+
+        alpha = lerp(
+            start = startAlpha,
+            stop = 1f,
+            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+        )
+    }

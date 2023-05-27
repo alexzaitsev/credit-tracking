@@ -40,6 +40,7 @@ class HomeScreenModel(
     }
 }
 
+const val STRING_EVERYTHING_IS_FINE = "EVERYTHING IS FINE"
 private const val STRING_1_ACC_NEEDS_ATT = "1 ACCOUNT NEEDS ATTENTION"
 private const val STRING_N_ACCS_NEED_ATT = "ACCOUNTS NEED ATTENTION"
 private const val STRING_2_WEEKS_NO_USAGE = "2 weeks no usage"
@@ -67,6 +68,10 @@ private fun getExtendedAccounts(accounts: List<Account>): List<AccountExtended> 
     }
 
 private fun getAccountStatus(account: Account): AccountStatus {
+    if (account.balance < -75) {
+        return AccountStatus.Issue(STRING_BALANCE_IS_LOW) // TODO TEMP
+    }
+
     if (account.balance < 0 && abs(account.balance) > getLimit(account.bankName) * 0.3f) {
         return AccountStatus.Issue(STRING_BALANCE_IS_LOW)
     }

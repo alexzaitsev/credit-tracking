@@ -112,14 +112,16 @@ private fun Transactions(
                 DefaultSpacer(4.dp)
             }
         }
-        item {
-            Text(
-                modifier = Modifier.padding(8.dp),
-                color = Color.Gray,
-                fontSize = 12.sp,
-                fontStyle = FontStyle.Italic,
-                text = "*Last 5 transactions"
-            )
+        if (txs.isNotEmpty()) {
+            item {
+                Text(
+                    modifier = Modifier.padding(8.dp),
+                    color = Color.Gray,
+                    fontSize = 12.sp,
+                    fontStyle = FontStyle.Italic,
+                    text = "*Last 5 transactions"
+                )
+            }
         }
     }
     FloatingActionButton(

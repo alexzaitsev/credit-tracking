@@ -2,7 +2,10 @@ package ui.screen.home
 
 import data.DataRepository
 import data.model.Account
+import data.source.cloud.TIME_ZONE
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.datetime.Clock
+import kotlinx.datetime.toInstant
 import ui.screen.BaseScreenModel
 
 class HomeScreenModel(
@@ -23,15 +26,7 @@ class HomeScreenModel(
 
     private fun observeData() = launch {
         dataRepository.observeAccounts().collectLatest { accounts: List<Account> ->
-            val accountExtended = accounts.mapIndexed { index, account ->
-                // TODO stub data
-                val status =
-                    if (index == 0 || index == 1) AccountStatus.Issue("2 weeks no usage") else AccountStatus.Ok
-                AccountExtended(
-                    account = account,
-                    status = status
-                )
-            }
+            val accountExtended = getExtendedAccounts(accounts)
             val numOfAccountsWithIssue = accountExtended.count { it.status is AccountStatus.Issue }
 
             _state.value = State.Ready(
@@ -44,10 +39,42 @@ class HomeScreenModel(
     }
 }
 
+private const val STRING_1_ACC_NEEDS_ATT = "1 ACCOUNT NEEDS ATTENTION"
+private const val STRING_N_ACCS_NEED_ATT = "ACCOUNTS NEED ATTENTION"
+private const val STRING_2_WEEKS_NO_USAGE = "2 weeks no usage"
+
+private fun getExtendedAccounts(accounts: List<Account>): List<AccountExtended> =
+    accounts.map { account ->
+        AccountExtended(
+            account = account,
+            status = getAccountStatus(account)
+        )
+    }.sortedWith { l, r ->
+        if (l.status is AccountStatus.Issue && r.status is AccountStatus.Ok) {
+            -1
+        } else if (l.status is AccountStatus.Ok && r.status is AccountStatus.Issue) {
+            1
+        } else {
+            l.account.personName.compareTo(r.account.personName)
+        }
+    }
+
+private fun getAccountStatus(account: Account): AccountStatus =
+    account.lastTxs.maxByOrNull { it.dateTime }?.let { lastTx ->
+        val lastTxTimestamp = lastTx.dateTime.toInstant(TIME_ZONE)
+        if ((Clock.System.now() - lastTxTimestamp).inWholeDays >= 14) {
+            AccountStatus.Issue(STRING_2_WEEKS_NO_USAGE)
+        } else if (lastTx.amount > -5) {
+            AccountStatus.Issue("Last tx is too big")
+        } else {
+            AccountStatus.Ok
+        }
+    } ?: AccountStatus.Ok
+
 private fun getGeneralStatus(numOfAccountsWithIssue: Int) = when (numOfAccountsWithIssue) {
     0 -> AccountStatus.Ok
-    1 -> AccountStatus.Issue(message = "1 ACCOUNT NEEDS ATTENTION")
-    else -> AccountStatus.Issue(message = "$numOfAccountsWithIssue ACCOUNTS NEED ATTENTION")
+    1 -> AccountStatus.Issue(message = STRING_1_ACC_NEEDS_ATT)
+    else -> AccountStatus.Issue(message = "$numOfAccountsWithIssue $STRING_N_ACCS_NEED_ATT")
 }
 
 sealed class AccountStatus {

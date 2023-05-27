@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toInstant
 import ui.screen.BaseScreenModel
+import kotlin.math.abs
 
 class HomeScreenModel(
     private val dataRepository: DataRepository
@@ -56,12 +57,17 @@ private fun getExtendedAccounts(accounts: List<Account>): List<AccountExtended> 
         } else if (l.status is AccountStatus.Ok && r.status is AccountStatus.Issue) {
             1
         } else {
-            l.account.personName.compareTo(r.account.personName)
+            val personComp = l.account.personName.compareTo(r.account.personName)
+            if (personComp == 0) {
+                l.account.bankName.compareTo(r.account.bankName)
+            } else {
+                personComp
+            }
         }
     }
 
 private fun getAccountStatus(account: Account): AccountStatus {
-    if (account.balance < 0 && account.balance < getLimit(account.bankName) * 0.3f) {
+    if (account.balance < 0 && abs(account.balance) > getLimit(account.bankName) * 0.3f) {
         return AccountStatus.Issue(STRING_BALANCE_IS_LOW)
     }
 

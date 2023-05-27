@@ -42,13 +42,12 @@ class HomeScreenModel(
             )
         }
     }
+}
 
-    private fun getGeneralStatus(numOfAccountsWithIssue: Int) =
-        if (numOfAccountsWithIssue == 0) {
-            AccountStatus.Ok
-        } else {
-            AccountStatus.Issue(message = "$numOfAccountsWithIssue ACCOUNTS NEED ATTENTION")
-        }
+private fun getGeneralStatus(numOfAccountsWithIssue: Int) = when (numOfAccountsWithIssue) {
+    0 -> AccountStatus.Ok
+    1 -> AccountStatus.Issue(message = "1 ACCOUNT NEEDS ATTENTION")
+    else -> AccountStatus.Issue(message = "$numOfAccountsWithIssue ACCOUNTS NEED ATTENTION")
 }
 
 sealed class AccountStatus {

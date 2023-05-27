@@ -2,16 +2,12 @@ package ui.screen.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -28,14 +24,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import data.model.Account
-import data.model.Tx
+import ui.screen.home.component.AccountItem
+import ui.screen.home.component.AccountStatus
 import ui.screen.observeState
 import ui.util.lerp
-import ui.util.print
-import ui.util.printAmount
-import ui.util.zeroBasedColor
-import ui.view.default.DefaultButton
 import ui.view.default.DefaultProgress
 import ui.view.default.DefaultSpacer
 import kotlin.math.abs
@@ -153,112 +145,6 @@ private fun AccountsList(
                     onAddTxClicked = { onAddTxClicked(account.id) }
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun AccountStatus(modifier: Modifier, status: AccountStatus) = when (status) {
-    is AccountStatus.Issue -> Text(
-        modifier = Modifier.fillMaxWidth().then(modifier),
-        textAlign = TextAlign.Center,
-        color = Color.Red,
-        text = status.message,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp
-    )
-
-    AccountStatus.Ok -> {}
-}
-
-@Composable
-private fun AccountItem(
-    modifier: Modifier,
-    account: Account,
-    onAddTxClicked: () -> Unit
-) = Column(modifier = modifier) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        UserName(name = account.personName)
-        DefaultSpacer(8.dp)
-        BankName(name = account.bankName)
-    }
-
-    Balance(balance = account.balance)
-    DefaultSpacer(16.dp)
-
-    Transactions(
-        modifier = Modifier.weight(1f),
-        txs = account.lastTxs
-    )
-
-    DefaultButton(
-        modifier = Modifier.align(Alignment.CenterHorizontally),
-        onClick = onAddTxClicked,
-        text = "Add transaction"
-    )
-}
-
-@Composable
-private fun UserName(name: String) = Text(
-    textAlign = TextAlign.Center,
-    fontWeight = FontWeight.Bold,
-    fontSize = 22.sp,
-    text = name
-)
-
-@Composable
-private fun BankName(name: String) = Text(
-    textAlign = TextAlign.Center,
-    fontWeight = FontWeight.SemiBold,
-    fontSize = 22.sp,
-    text = name
-)
-
-@Composable
-private fun Balance(balance: Double) = Text(
-    modifier = Modifier.fillMaxWidth(),
-    textAlign = TextAlign.Center,
-    fontWeight = FontWeight.SemiBold,
-    fontSize = 20.sp,
-    color = balance.zeroBasedColor,
-    text = balance.printAmount()
-)
-
-@Composable
-private fun Transactions(modifier: Modifier, txs: List<Tx>) {
-    LazyColumn(modifier = modifier) {
-        items(txs) { tx ->
-            TxItem(tx = tx)
-        }
-    }
-}
-
-@Composable
-private fun TxItem(tx: Tx) {
-    Column(modifier = Modifier.padding(4.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                modifier = Modifier.padding(end = 8.dp),
-                fontSize = 12.sp,
-                text = tx.dateTime.print(twoLines = true)
-            )
-            Text(
-                modifier = Modifier.padding(end = 5.dp),
-                color = tx.amount.zeroBasedColor,
-                text = tx.amount.printAmount()
-            )
-        }
-        if (tx.comment.isNotEmpty()) {
-            Text(
-                modifier = Modifier.padding(top = 2.dp),
-                fontSize = 12.sp,
-                color = Color(0xff3d3d3d),
-                text = tx.comment
-            )
         }
     }
 }

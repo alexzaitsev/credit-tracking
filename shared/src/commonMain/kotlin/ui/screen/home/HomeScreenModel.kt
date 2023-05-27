@@ -42,6 +42,7 @@ class HomeScreenModel(
 private const val STRING_1_ACC_NEEDS_ATT = "1 ACCOUNT NEEDS ATTENTION"
 private const val STRING_N_ACCS_NEED_ATT = "ACCOUNTS NEED ATTENTION"
 private const val STRING_2_WEEKS_NO_USAGE = "2 weeks no usage"
+private const val STRING_BALANCE_IS_LOW = "Balance is below 30%"
 
 private fun getExtendedAccounts(accounts: List<Account>): List<AccountExtended> =
     accounts.map { account ->
@@ -59,22 +60,31 @@ private fun getExtendedAccounts(accounts: List<Account>): List<AccountExtended> 
         }
     }
 
-private fun getAccountStatus(account: Account): AccountStatus =
+private fun getAccountStatus(account: Account): AccountStatus {
+    if (account.balance < 0 && account.balance < getLimit(account.bankName) * 0.3f) {
+        return AccountStatus.Issue(STRING_BALANCE_IS_LOW)
+    }
+
     account.lastTxs.maxByOrNull { it.dateTime }?.let { lastTx ->
         val lastTxTimestamp = lastTx.dateTime.toInstant(TIME_ZONE)
         if ((Clock.System.now() - lastTxTimestamp).inWholeDays >= 14) {
-            AccountStatus.Issue(STRING_2_WEEKS_NO_USAGE)
-        } else if (lastTx.amount > -5) {
-            AccountStatus.Issue("Last tx is too big")
-        } else {
-            AccountStatus.Ok
+            return AccountStatus.Issue(STRING_2_WEEKS_NO_USAGE)
         }
-    } ?: AccountStatus.Ok
+    }
+
+    return AccountStatus.Ok
+}
 
 private fun getGeneralStatus(numOfAccountsWithIssue: Int) = when (numOfAccountsWithIssue) {
     0 -> AccountStatus.Ok
     1 -> AccountStatus.Issue(message = STRING_1_ACC_NEEDS_ATT)
     else -> AccountStatus.Issue(message = "$numOfAccountsWithIssue $STRING_N_ACCS_NEED_ATT")
+}
+
+private fun getLimit(bankName: String): Int = when (bankName.lowercase()) {
+    "cibc" -> 1000
+    "servus" -> 1500
+    else -> 0
 }
 
 sealed class AccountStatus {

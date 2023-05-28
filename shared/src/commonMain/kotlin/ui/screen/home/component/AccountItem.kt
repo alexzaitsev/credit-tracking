@@ -163,7 +163,7 @@ private fun Balance(colors: HomeColors, balance: Double) = Text(
     textAlign = TextAlign.Center,
     fontWeight = FontWeight.SemiBold,
     fontSize = 20.sp,
-    color = balance.zeroBasedColor(colors),
+    color = balance.accountBalanceColor(colors),
     text = balance.printAmount()
 )
 
@@ -230,14 +230,14 @@ private fun TxItem(status: AccountStatus, tx: Tx) {
             Text(
                 modifier = Modifier.padding(end = 8.dp),
                 color = Colors.WHITE,
-                fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 text = tx.dateTime.print(twoLines = true)
             )
             if (tx.comment.isNotEmpty()) {
                 Text(
-                    modifier = Modifier.weight(1f).padding(end = 8.dp),
-                    fontSize = 12.sp,
+                    modifier = Modifier.weight(1f)
+                        .padding(horizontal = 8.dp)
+                        .align(Alignment.Top),
                     color = colors.txCommentText,
                     text = tx.comment
                 )
@@ -246,7 +246,7 @@ private fun TxItem(status: AccountStatus, tx: Tx) {
             }
             Text(
                 fontWeight = FontWeight.Bold,
-                color = tx.amount.zeroBasedColor(colors),
+                color = tx.amount.txAmountColor(colors),
                 text = tx.amount.printAmount()
             )
         }

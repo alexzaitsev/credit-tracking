@@ -9,13 +9,15 @@ object Colors {
     val PINK_200 = Color(0xFFF48FB1)
     val PINK_400 = Color(0xFFEC407A)
     val PINK_600 = Color(0xFFD81B60)
+    val PINK_A100 = Color(0xFFFF80AB)
 
     val TEAL_200 = Color(0xFF80CBC4)
     val TEAL_300 = Color(0xFF4DB6AC)
     val TEAL_400 = Color(0xFF26A69A)
     val TEAL_600 = Color(0xFF00897B)
+    val TEAL_A100 = Color(0xFFA7FFEB)
 
-    val BLUE_300 = Color(0xFF64B5F6)
+    val INDIGO_A100 = Color(0xFF8C9EFF)
 
     val DEEP_PURPLE_200 = Color(0xFFB39DDB)
     val DEEP_PURPLE_300 = Color(0xFF9575CD)
@@ -26,6 +28,8 @@ object Colors {
     val AMBER_300 = Color(0xFFFFD54F)
     val AMBER_400 = Color(0xFFFFCA28)
     val AMBER_600 = Color(0xFFFFB300)
+
+    val ORANGE_A100 = Color(0xFFFFD180)
 
     val GRAY_200 = Color(0xFFEEEEEE)
 

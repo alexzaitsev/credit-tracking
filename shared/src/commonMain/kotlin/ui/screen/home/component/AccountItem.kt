@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.PagerState
@@ -53,31 +53,29 @@ fun AccountPage(
     pagerState: PagerState,
     onAddTxClicked: (String) -> Unit
 ) = Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    Spacer(modifier = Modifier.weight(0.1f))
     AccountStatus(
-        modifier = getGraphicsModifier(
-            pagerState = pagerState,
-            index = index,
-            startScale = 0.3f,
-            startAlpha = 0.1f
+        modifier = Modifier.weight(0.2f).then(
+            getGraphicsModifier(
+                pagerState = pagerState,
+                index = index,
+                startScale = 0.3f,
+                startAlpha = 0.1f
+            )
         ),
         status = account.status
     )
-    Spacer(modifier = Modifier.weight(0.1f))
 
     Card(
         shape = RoundedCornerShape(10.dp),
         elevation = 10.dp,
-        modifier = Modifier
-            .weight(0.8f)
-            .then(
-                getGraphicsModifier(
-                    pagerState = pagerState,
-                    index = index,
-                    startScale = 0.85f,
-                    startAlpha = 0.5f
-                ),
-            )
+        modifier = Modifier.weight(0.8f).then(
+            getGraphicsModifier(
+                pagerState = pagerState,
+                index = index,
+                startScale = 0.85f,
+                startAlpha = 0.5f
+            ),
+        )
     ) {
         AccountItem(
             modifier = Modifier.fillMaxSize()
@@ -90,23 +88,26 @@ fun AccountPage(
 }
 
 @Composable
-fun AccountStatus(modifier: Modifier, status: AccountStatus) = when (status) {
-    is AccountStatus.Issue -> Text(
-        modifier = Modifier.fillMaxWidth().then(modifier),
-        textAlign = TextAlign.Center,
-        color = status.colors.accountStatus,
-        text = status.message,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 24.sp
-    )
+fun AccountStatus(modifier: Modifier, status: AccountStatus) =
+    Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        when (status) {
+            is AccountStatus.Issue -> Text(
+                modifier = Modifier.fillMaxWidth().then(modifier),
+                textAlign = TextAlign.Center,
+                color = status.colors.accountStatus,
+                text = status.message,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 24.sp
+            )
 
-    AccountStatus.Ok -> Icon(
-        modifier = Modifier.width(100.dp).then(modifier),
-        painter = rememberVectorPainter(Icons.Filled.Done),
-        tint = status.colors.accountStatus,
-        contentDescription = null
-    )
-}
+            AccountStatus.Ok -> Icon(
+                modifier = Modifier.size(100.dp).then(modifier),
+                painter = rememberVectorPainter(Icons.Filled.Done),
+                tint = status.colors.accountStatus,
+                contentDescription = null
+            )
+        }
+    }
 
 @Composable
 fun AccountItem(
@@ -246,6 +247,7 @@ private fun TxItem(status: AccountStatus, tx: Tx) {
             }
             Text(
                 fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
                 color = tx.amount.txAmountColor(colors),
                 text = tx.amount.printAmount()
             )

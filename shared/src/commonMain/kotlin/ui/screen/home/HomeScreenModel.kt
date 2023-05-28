@@ -72,10 +72,6 @@ private fun getExtendedAccounts(accounts: List<Account>): List<AccountExtended> 
     }
 
 private fun getAccountStatus(account: Account): AccountStatus {
-//    if (account.balance < -75) {
-//        return AccountStatus.Issue(STRING_BALANCE_IS_LOW) // TODO TEMP
-//    }
-
     if (account.balance < 0 && abs(account.balance) > getLimit(account.bankName) * 0.3f) {
         return AccountStatus.Issue(STRING_BALANCE_IS_LOW)
     }

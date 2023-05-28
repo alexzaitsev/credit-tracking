@@ -33,9 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import data.model.Account
 import data.model.Tx
-import ui.screen.home.AccountStatus
+import ui.screen.home.STRING_LAST_TXS
+import ui.screen.home.model.AccountExtended
+import ui.screen.home.model.AccountStatus
 import ui.util.lerp
 import ui.util.print
 import ui.util.printAmount
@@ -47,8 +48,7 @@ import kotlin.math.abs
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AccountPage(
-    account: Account,
-    status: AccountStatus,
+    account: AccountExtended,
     index: Int,
     pagerState: PagerState,
     onAddTxClicked: (String) -> Unit
@@ -61,14 +61,10 @@ fun AccountPage(
             startScale = 0.3f,
             startAlpha = 0.1f
         ),
-        status = status
+        status = account.status
     )
     Spacer(modifier = Modifier.weight(0.1f))
 
-    val bg = when (status) {
-        is AccountStatus.Issue -> Colors.AMBER_300
-        AccountStatus.Ok -> Colors.DEEP_PURPLE_300
-    }
     Card(
         shape = RoundedCornerShape(10.dp),
         elevation = 10.dp,
@@ -85,10 +81,10 @@ fun AccountPage(
     ) {
         AccountItem(
             modifier = Modifier.fillMaxSize()
-                .background(color = bg)
+                .background(color = account.status.colors.cardBg)
                 .padding(16.dp),
             account = account,
-            onAddTxClicked = { onAddTxClicked(account.id) }
+            onAddTxClicked = { onAddTxClicked(account.account.id) }
         )
     }
 }
@@ -98,7 +94,7 @@ fun AccountStatus(modifier: Modifier, status: AccountStatus) = when (status) {
     is AccountStatus.Issue -> Text(
         modifier = Modifier.fillMaxWidth().then(modifier),
         textAlign = TextAlign.Center,
-        color = Colors.PINK_600,
+        color = status.colors.accountStatus,
         text = status.message,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp
@@ -107,7 +103,7 @@ fun AccountStatus(modifier: Modifier, status: AccountStatus) = when (status) {
     AccountStatus.Ok -> Icon(
         modifier = Modifier.width(100.dp).then(modifier),
         painter = rememberVectorPainter(Icons.Filled.Done),
-        tint = Colors.GREEN_600,
+        tint = status.colors.accountStatus,
         contentDescription = null
     )
 }
@@ -115,26 +111,30 @@ fun AccountStatus(modifier: Modifier, status: AccountStatus) = when (status) {
 @Composable
 fun AccountItem(
     modifier: Modifier,
-    account: Account,
+    account: AccountExtended,
     onAddTxClicked: () -> Unit
-) = Column(modifier = modifier) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        UserName(name = account.personName)
-        DefaultSpacer(8.dp)
-        BankName(name = account.bankName)
-    }
-    Balance(balance = account.balance)
-    DefaultSpacer(16.dp)
+) {
+    val acc = account.account
 
-    Transactions(
-        modifier = Modifier.fillMaxWidth().weight(1f),
-        txs = account.lastTxs,
-        onAddTxClicked = onAddTxClicked
-    )
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            UserName(name = acc.personName)
+            DefaultSpacer(8.dp)
+            BankName(name = acc.bankName)
+        }
+        Balance(balance = acc.balance)
+        DefaultSpacer(16.dp)
+
+        Transactions(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            account = account,
+            onAddTxClicked = onAddTxClicked
+        )
+    }
 }
 
 @Composable
@@ -166,41 +166,46 @@ private fun Balance(balance: Double) = Text(
 @Composable
 private fun Transactions(
     modifier: Modifier,
-    txs: List<Tx>,
+    account: AccountExtended,
     onAddTxClicked: () -> Unit
-) = Box(modifier = modifier) {
-    LazyColumn {
-        items(txs) { tx ->
-            Column {
-                TxItem(tx = tx)
-                DefaultSpacer(4.dp)
+) {
+    val txs = account.account.lastTxs
+    val status = account.status
+
+    Box(modifier = modifier) {
+        LazyColumn {
+            items(txs) { tx ->
+                Column {
+                    TxItem(status = status, tx = tx)
+                    DefaultSpacer(4.dp)
+                }
+            }
+            if (txs.isNotEmpty()) {
+                item {
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        color = status.colors.lastTxsText,
+                        fontSize = 12.sp,
+                        fontStyle = FontStyle.Italic,
+                        text = STRING_LAST_TXS
+                    )
+                }
             }
         }
-        if (txs.isNotEmpty()) {
-            item {
-                Text(
-                    modifier = Modifier.padding(8.dp),
-                    color = Colors.AMBER_200,
-                    fontSize = 12.sp,
-                    fontStyle = FontStyle.Italic,
-                    text = "*Last 5 transactions"
-                )
-            }
+        FloatingActionButton(
+            modifier = Modifier.align(Alignment.BottomEnd),
+            shape = CircleShape,
+            onClick = onAddTxClicked,
+        ) {
+            Icon(imageVector = Icons.Filled.Add, contentDescription = null)
         }
-    }
-    FloatingActionButton(
-        modifier = Modifier.align(Alignment.BottomEnd),
-        shape = CircleShape,
-        onClick = onAddTxClicked,
-    ) {
-        Icon(imageVector = Icons.Filled.Add, contentDescription = null)
     }
 }
 
 @Composable
-private fun TxItem(tx: Tx) {
+private fun TxItem(status: AccountStatus, tx: Tx) {
     Card(
-        backgroundColor = Colors.BLUE_300,
+        backgroundColor = status.colors.txBg,
         shape = RoundedCornerShape(10.dp),
         elevation = 2.dp
     ) {
@@ -221,7 +226,7 @@ private fun TxItem(tx: Tx) {
                 Text(
                     modifier = Modifier.weight(1f).padding(end = 8.dp),
                     fontSize = 12.sp,
-                    color = Colors.GRAY_200,
+                    color = status.colors.txCommentText,
                     text = tx.comment
                 )
             } else {

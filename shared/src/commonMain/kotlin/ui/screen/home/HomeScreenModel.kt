@@ -7,6 +7,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toInstant
 import ui.screen.BaseScreenModel
+import ui.screen.home.model.AccountExtended
+import ui.screen.home.model.AccountStatus
+import ui.screen.home.model.HomeSummary
 import kotlin.math.abs
 
 class HomeScreenModel(
@@ -41,6 +44,7 @@ class HomeScreenModel(
 }
 
 const val STRING_EVERYTHING_IS_FINE = "EVERYTHING IS FINE"
+const val STRING_LAST_TXS = "*Last 5 transactions"
 private const val STRING_1_ACC_NEEDS_ATT = "1 ACCOUNT NEEDS ATTENTION"
 private const val STRING_N_ACCS_NEED_ATT = "ACCOUNTS NEED ATTENTION"
 private const val STRING_2_WEEKS_NO_USAGE = "2 weeks no usage"
@@ -97,18 +101,3 @@ private fun getLimit(bankName: String): Int = when (bankName.lowercase()) {
     "servus" -> 1500
     else -> 0
 }
-
-sealed class AccountStatus {
-    object Ok : AccountStatus()
-    data class Issue(val message: String) : AccountStatus()
-}
-
-data class AccountExtended(
-    val account: Account,
-    val status: AccountStatus
-)
-
-data class HomeSummary(
-    val accounts: List<AccountExtended>,
-    val generalStatus: AccountStatus
-)

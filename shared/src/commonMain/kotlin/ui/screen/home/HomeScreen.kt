@@ -13,16 +13,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ui.screen.home.component.AccountPage
+import ui.screen.home.component.colors
+import ui.screen.home.model.AccountExtended
+import ui.screen.home.model.AccountStatus
+import ui.screen.home.model.HomeSummary
 import ui.screen.observeState
 import ui.view.default.DefaultProgress
 import ui.view.default.DefaultSpacer
-import ui.view.theme.Colors
 
 @Composable
 fun HomeScreen(
@@ -43,7 +45,7 @@ private fun ReadyViewState(
     summary: HomeSummary,
     onAddTxClicked: (String) -> Unit
 ) = Column {
-    GeneralStatus(summary.generalStatus)
+    GeneralStatus(status = summary.generalStatus)
     DefaultSpacer(16.dp)
 
     AccountsList(
@@ -56,10 +58,6 @@ private fun ReadyViewState(
 
 @Composable
 private fun GeneralStatus(status: AccountStatus) {
-    val color = when (status) {
-        AccountStatus.Ok -> Colors.GREEN_600
-        is AccountStatus.Issue -> Colors.PINK_600
-    }
     val text = when (status) {
         is AccountStatus.Issue -> status.message
         AccountStatus.Ok -> STRING_EVERYTHING_IS_FINE
@@ -69,13 +67,13 @@ private fun GeneralStatus(status: AccountStatus) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = color)
+                .background(color = status.colors.generalStatusBg)
                 .padding(16.dp),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
             text = text,
-            color = Color.White
+            color = status.colors.generalStatusText
         )
     }
 }
@@ -96,11 +94,8 @@ private fun AccountsList(
         contentPadding = PaddingValues(horizontal = 40.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) { index ->
-        val (account, status) = accounts[index]
-
         AccountPage(
-            account = account,
-            status = status,
+            account = accounts[index],
             index = index,
             pagerState = pagerState,
             onAddTxClicked = onAddTxClicked

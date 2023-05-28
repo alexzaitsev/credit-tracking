@@ -7,10 +7,12 @@ object Colors {
     val RED_600 = Color(0xFFE53935)
 
     val PINK_200 = Color(0xFFF48FB1)
+    val PINK_400 = Color(0xFFEC407A)
     val PINK_600 = Color(0xFFD81B60)
 
-    val GREEN_300 = Color(0xFF4DB6AC)
-    val GREEN_600 = Color(0xFF00897B)
+    val TEAL_300 = Color(0xFF4DB6AC)
+    val TEAL_400 = Color(0xFF26A69A)
+    val TEAL_600 = Color(0xFF00897B)
 
     val BLUE_300 = Color(0xFF64B5F6)
 

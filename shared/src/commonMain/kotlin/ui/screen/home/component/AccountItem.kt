@@ -171,6 +171,7 @@ private fun Transactions(
 ) {
     val txs = account.account.lastTxs
     val status = account.status
+    val colors = status.colors
 
     Box(modifier = modifier) {
         LazyColumn {
@@ -184,7 +185,7 @@ private fun Transactions(
                 item {
                     Text(
                         modifier = Modifier.padding(8.dp),
-                        color = status.colors.lastTxsText,
+                        color = colors.lastTxsText,
                         fontSize = 12.sp,
                         fontStyle = FontStyle.Italic,
                         text = STRING_LAST_TXS
@@ -194,10 +195,15 @@ private fun Transactions(
         }
         FloatingActionButton(
             modifier = Modifier.align(Alignment.BottomEnd),
+            backgroundColor = colors.fabBg,
             shape = CircleShape,
             onClick = onAddTxClicked,
         ) {
-            Icon(imageVector = Icons.Filled.Add, contentDescription = null)
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = null,
+                tint = colors.fabText
+            )
         }
     }
 }

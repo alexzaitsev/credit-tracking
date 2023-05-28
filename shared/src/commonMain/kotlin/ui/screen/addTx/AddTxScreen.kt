@@ -10,15 +10,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import ui.screen.observeSideEffect
 import ui.screen.observeState
+import ui.util.rememberMutable
 import ui.view.default.DefaultButton
 import ui.view.default.DefaultProgress
 import ui.view.default.DefaultSpacer
 import ui.view.default.DefaultTextField
 import ui.view.default.DefaultTopBar
-import ui.util.rememberMutable
+import ui.view.theme.Colors.DEEP_PURPLE_600
+import ui.view.theme.Colors.WHITE
+import ui.view.theme.Strings
 
 @Composable
 fun AddTxScreen(sm: AddTxScreenModel, onBackClicked: () -> Unit, onAdded: () -> Unit) {
@@ -52,7 +57,9 @@ private fun InitialState(
 
     Column {
         DefaultTopBar(
-            title = "Add transaction",
+            title = Strings.ADD_TX,
+            backgroundColor = DEEP_PURPLE_600,
+            textColor = WHITE,
             onBackPressed = onBackClicked
         )
         Column(
@@ -63,7 +70,7 @@ private fun InitialState(
             DefaultTextField(
                 modifier = Modifier.fillMaxWidth(),
                 defaultValue = amount,
-                hint = "Enter amount",
+                hint = Strings.ENTER_AMOUNT,
                 isError = amountError,
                 onTextChanged = { newAmount ->
                     amount = newAmount
@@ -76,7 +83,7 @@ private fun InitialState(
             DefaultTextField(
                 modifier = Modifier.fillMaxWidth(),
                 defaultValue = comment,
-                hint = "Enter comment (optional)",
+                hint = Strings.ENTER_COMMENT,
                 isError = commentError,
                 onTextChanged = { newComment ->
                     comment = newComment
@@ -84,11 +91,11 @@ private fun InitialState(
                 minLines = 3,
                 maxLines = 3
             )
-            DefaultSpacer(8.dp)
+            DefaultSpacer(16.dp)
 
             // button
             DefaultButton(
-                text = "Done",
+                text = Strings.DONE.toUpperCase(Locale.current),
                 onClick = {
                     val amountDouble = amount.toDoubleOrNull()
                     if (amountDouble == null) {

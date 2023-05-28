@@ -10,6 +10,7 @@ import ui.screen.BaseScreenModel
 import ui.screen.home.model.AccountExtended
 import ui.screen.home.model.AccountStatus
 import ui.screen.home.model.HomeSummary
+import ui.view.theme.Strings
 import kotlin.math.abs
 
 class HomeScreenModel(
@@ -43,13 +44,6 @@ class HomeScreenModel(
     }
 }
 
-const val STRING_EVERYTHING_IS_FINE = "EVERYTHING IS FINE"
-const val STRING_LAST_TXS = "*Last 5 transactions"
-private const val STRING_1_ACC_NEEDS_ATT = "1 ACCOUNT NEEDS ATTENTION"
-private const val STRING_N_ACCS_NEED_ATT = "ACCOUNTS NEED ATTENTION"
-private const val STRING_2_WEEKS_NO_USAGE = "2 weeks no usage"
-private const val STRING_BALANCE_IS_LOW = "Balance is below 30%"
-
 private fun getExtendedAccounts(accounts: List<Account>): List<AccountExtended> =
     accounts.map { account ->
         AccountExtended(
@@ -73,13 +67,13 @@ private fun getExtendedAccounts(accounts: List<Account>): List<AccountExtended> 
 
 private fun getAccountStatus(account: Account): AccountStatus {
     if (account.balance < 0 && abs(account.balance) > getLimit(account.bankName) * 0.3f) {
-        return AccountStatus.Issue(STRING_BALANCE_IS_LOW)
+        return AccountStatus.Issue(Strings.BALANCE_IS_LOW)
     }
 
     account.lastTxs.maxByOrNull { it.dateTime }?.let { lastTx ->
         val lastTxTimestamp = lastTx.dateTime.toInstant(TIME_ZONE)
         if ((Clock.System.now() - lastTxTimestamp).inWholeDays >= 14) {
-            return AccountStatus.Issue(STRING_2_WEEKS_NO_USAGE)
+            return AccountStatus.Issue(Strings.TWO_WEEKS_NO_USAGE)
         }
     }
 
@@ -88,8 +82,8 @@ private fun getAccountStatus(account: Account): AccountStatus {
 
 private fun getGeneralStatus(numOfAccountsWithIssue: Int) = when (numOfAccountsWithIssue) {
     0 -> AccountStatus.Ok
-    1 -> AccountStatus.Issue(message = STRING_1_ACC_NEEDS_ATT)
-    else -> AccountStatus.Issue(message = "$numOfAccountsWithIssue $STRING_N_ACCS_NEED_ATT")
+    1 -> AccountStatus.Issue(message = Strings.ONE_ACC_NEEDS_ATT)
+    else -> AccountStatus.Issue(message = "$numOfAccountsWithIssue ${Strings.N_ACCS_NEED_ATT}")
 }
 
 private fun getLimit(bankName: String): Int = when (bankName.lowercase()) {

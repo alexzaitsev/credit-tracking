@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import data.model.Tx
-import ui.screen.home.STRING_LAST_TXS
 import ui.screen.home.model.AccountExtended
 import ui.screen.home.model.AccountStatus
 import ui.util.lerp
@@ -43,6 +42,7 @@ import ui.util.print
 import ui.util.printAmount
 import ui.view.default.DefaultSpacer
 import ui.view.theme.Colors
+import ui.view.theme.Strings
 import kotlin.math.abs
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -193,7 +193,7 @@ private fun Transactions(
                         color = colors.lastTxsText,
                         fontSize = 12.sp,
                         fontStyle = FontStyle.Italic,
-                        text = STRING_LAST_TXS
+                        text = Strings.LAST_TXS
                     )
                 }
             }

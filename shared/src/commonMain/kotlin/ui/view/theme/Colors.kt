@@ -10,6 +10,7 @@ object Colors {
     val PINK_400 = Color(0xFFEC407A)
     val PINK_600 = Color(0xFFD81B60)
 
+    val TEAL_200 = Color(0xFF80CBC4)
     val TEAL_300 = Color(0xFF4DB6AC)
     val TEAL_400 = Color(0xFF26A69A)
     val TEAL_600 = Color(0xFF00897B)
@@ -29,4 +30,5 @@ object Colors {
     val GRAY_200 = Color(0xFFEEEEEE)
 
     val WHITE = Color.White
+    val BLACK = Color.Black
 }

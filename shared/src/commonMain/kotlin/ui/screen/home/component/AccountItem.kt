@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontStyle
@@ -40,7 +41,6 @@ import ui.screen.home.model.AccountStatus
 import ui.util.lerp
 import ui.util.print
 import ui.util.printAmount
-import ui.util.zeroBasedColor
 import ui.view.default.DefaultSpacer
 import ui.view.theme.Colors
 import kotlin.math.abs
@@ -115,6 +115,7 @@ fun AccountItem(
     onAddTxClicked: () -> Unit
 ) {
     val acc = account.account
+    val colors = account.status.colors
 
     Column(modifier = modifier) {
         Row(
@@ -122,11 +123,12 @@ fun AccountItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            UserName(name = acc.personName)
+            UserName(name = acc.personName, color = colors.accountTitleText)
             DefaultSpacer(8.dp)
-            BankName(name = acc.bankName)
+            BankName(name = acc.bankName, color = colors.accountTitleText)
         }
-        Balance(balance = acc.balance)
+        DefaultSpacer(8.dp)
+        Balance(colors = colors, balance = acc.balance)
         DefaultSpacer(16.dp)
 
         Transactions(
@@ -138,28 +140,30 @@ fun AccountItem(
 }
 
 @Composable
-private fun UserName(name: String) = Text(
+private fun UserName(name: String, color: Color) = Text(
     textAlign = TextAlign.Center,
     fontWeight = FontWeight.Bold,
     fontSize = 22.sp,
-    text = name
+    text = name,
+    color = color
 )
 
 @Composable
-private fun BankName(name: String) = Text(
+private fun BankName(name: String, color: Color) = Text(
     textAlign = TextAlign.Center,
     fontWeight = FontWeight.SemiBold,
     fontSize = 22.sp,
-    text = name
+    text = name,
+    color = color
 )
 
 @Composable
-private fun Balance(balance: Double) = Text(
+private fun Balance(colors: HomeColors, balance: Double) = Text(
     modifier = Modifier.fillMaxWidth(),
     textAlign = TextAlign.Center,
     fontWeight = FontWeight.SemiBold,
     fontSize = 20.sp,
-    color = balance.zeroBasedColor,
+    color = balance.zeroBasedColor(colors),
     text = balance.printAmount()
 )
 
@@ -202,7 +206,7 @@ private fun Transactions(
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription = null,
-                tint = colors.fabText
+                tint = colors.fabIconBg
             )
         }
     }
@@ -210,8 +214,10 @@ private fun Transactions(
 
 @Composable
 private fun TxItem(status: AccountStatus, tx: Tx) {
+    val colors = status.colors
+
     Card(
-        backgroundColor = status.colors.txBg,
+        backgroundColor = colors.txBg,
         shape = RoundedCornerShape(10.dp),
         elevation = 2.dp
     ) {
@@ -232,7 +238,7 @@ private fun TxItem(status: AccountStatus, tx: Tx) {
                 Text(
                     modifier = Modifier.weight(1f).padding(end = 8.dp),
                     fontSize = 12.sp,
-                    color = status.colors.txCommentText,
+                    color = colors.txCommentText,
                     text = tx.comment
                 )
             } else {
@@ -240,7 +246,7 @@ private fun TxItem(status: AccountStatus, tx: Tx) {
             }
             Text(
                 fontWeight = FontWeight.Bold,
-                color = tx.amount.zeroBasedColor,
+                color = tx.amount.zeroBasedColor(colors),
                 text = tx.amount.printAmount()
             )
         }

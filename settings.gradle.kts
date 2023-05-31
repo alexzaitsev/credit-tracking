@@ -1,4 +1,4 @@
-rootProject.name = "My application"
+rootProject.name = "Credit Tracking"
 
 include(":androidApp")
 include(":shared")

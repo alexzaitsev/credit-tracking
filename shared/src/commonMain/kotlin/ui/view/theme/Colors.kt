@@ -2,6 +2,9 @@ package ui.view.theme
 
 import androidx.compose.ui.graphics.Color
 
+/**
+ * https://m2.material.io/design/color/the-color-system.html#tools-for-picking-colors
+ */
 object Colors {
     val RED_300 = Color(0xFFE57373)
     val RED_600 = Color(0xFFE53935)
